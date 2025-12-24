@@ -1,105 +1,115 @@
 const DAILY_LIMIT = 3;
+const STORAGE_KEY = "zeus_lite_usage_v3";
+const isAdmin = window.location.search.includes("admin");
 
-const LOADING_STEPS = [
-  "Analyzing most searched products…",
-  "Analyzing top clicked items…",
-  "Evaluating best ad angles…",
-  "Estimating profit per sale…",
-  "Calculating buyer likelihood…"
+const ANALYSIS_STEPS = [
+  "Analyzing most searched products",
+  "Analyzing top clicked items",
+  "Evaluating best ad angles",
+  "Estimating profit per sale",
+  "Analyzing buyer likelihood"
 ];
 
-const PRODUCTS = [
+const ZEUS_LITE_PRODUCTS = [
+  {
+    product: "Smart Pet Feeder with Camera",
+    profit: "$20–$40",
+    trending: "Remote pet monitoring demand continues to rise.",
+    angle: "Peace of mind for busy pet owners.",
+    likelihood: "75–85%"
+  },
   {
     product: "Compact Home Air Quality Monitor",
     profit: "$18–$30",
     trending: "Health-focused consumers care more about indoor air.",
     angle: "Quick way to see if your space is actually healthy.",
-    likelihood: "70–82%",
+    likelihood: "70–82%"
   },
   {
     product: "Automatic Plant Watering System",
     profit: "$22–$35",
-    trending: "Urban plant owners want low-effort maintenance.",
-    angle: "Set-and-forget solution for busy households.",
-    likelihood: "72–84%",
-  },
-  {
-    product: "Smart Pet Feeder with Camera",
-    profit: "$20–$40",
-    trending: "Pet monitoring demand continues to rise.",
-    angle: "Peace of mind for pet owners while away.",
-    likelihood: "75–85%",
+    trending: "Urban plant owners want low-effort care solutions.",
+    angle: "Set-and-forget backup for people who forget to water.",
+    likelihood: "72–84%"
   }
 ];
 
-function todayKey() {
+function getToday() {
   return new Date().toISOString().split("T")[0];
 }
 
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function loadUsage() {
-  const raw = localStorage.getItem("zeus_lite_usage");
-  const today = todayKey();
-  if (!raw) return { date: today, used: 0 };
+  if (isAdmin) return { date: getToday(), used: 0 };
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return { date: getToday(), used: 0 };
   const data = JSON.parse(raw);
-  return data.date === today ? data : { date: today, used: 0 };
+  return data.date === getToday() ? data : { date: getToday(), used: 0 };
 }
 
 function saveUsage(u) {
-  localStorage.setItem("zeus_lite_usage", JSON.stringify(u));
+  if (!isAdmin) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("generateBtn");
   const output = document.getElementById("output");
   const counter = document.getElementById("counter");
+  const modeLabel = document.getElementById("modeLabel");
+  const statusNote = document.getElementById("statusNote");
+
   let usage = loadUsage();
   let index = usage.used;
 
   function updateUI() {
+    if (isAdmin) {
+      modeLabel.textContent = "Admin mode";
+      counter.textContent = "Unlimited generations";
+      statusNote.textContent = "Daily limits disabled.";
+      btn.disabled = false;
+      return;
+    }
+
     const remaining = DAILY_LIMIT - usage.used;
     counter.textContent = `Generations remaining today: ${remaining} / ${DAILY_LIMIT}`;
-    if (remaining <= 0) {
-      btn.disabled = true;
-      btn.textContent = "Daily limit reached";
-    } else {
-      btn.disabled = false;
-      btn.textContent = "Generate product";
-    }
+    statusNote.textContent = "Each generation highlights one product rising today.";
+
+    btn.disabled = remaining <= 0;
+    btn.textContent = remaining <= 0 ? "Daily limit reached" : "Generate product";
   }
 
   updateUI();
 
-  btn.addEventListener("click", () => {
-    if (usage.used >= DAILY_LIMIT) return;
+  btn.addEventListener("click", async () => {
+    if (!isAdmin && usage.used >= DAILY_LIMIT) return;
 
     btn.disabled = true;
-    output.textContent = LOADING_STEPS[0];
-
     let step = 0;
-    const interval = setInterval(() => {
-      step++;
-      if (step < LOADING_STEPS.length) {
-        output.textContent = LOADING_STEPS[step];
-      }
-    }, 1200);
+    output.textContent = ANALYSIS_STEPS[step];
 
-    const delay = 6000 + Math.random() * 2000;
+    const loop = setInterval(() => {
+      step = (step + 1) % ANALYSIS_STEPS.length;
+      output.textContent = ANALYSIS_STEPS[step];
+    }, 1500);
 
-    setTimeout(() => {
-      clearInterval(interval);
-      const p = PRODUCTS[index] || PRODUCTS[PRODUCTS.length - 1];
-      output.textContent =
-        `Product: ${p.product}\n` +
-        `Profit per sale: ${p.profit}\n` +
-        `Why it’s trending: ${p.trending}\n` +
-        `Best marketing angle: ${p.angle}\n` +
-        `Likelihood to purchase: ${p.likelihood}`;
+    await wait(6000 + Math.random() * 2000);
+    clearInterval(loop);
 
+    const p = ZEUS_LITE_PRODUCTS[index % ZEUS_LITE_PRODUCTS.length];
+    output.textContent =
+      `Product: ${p.product}\nProfit per sale: ${p.profit}\nWhy it’s trending: ${p.trending}\nBest marketing angle: ${p.angle}\nLikelihood to purchase: ${p.likelihood}`;
+
+    if (!isAdmin) {
       usage.used++;
-      usage.date = todayKey();
       saveUsage(usage);
-      index++;
-      updateUI();
-    }, delay);
+    }
+
+    index++;
+    updateUI();
   });
 });
