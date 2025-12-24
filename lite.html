@@ -5,47 +5,32 @@
   <title>Zeus Lite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
 
   <main class="container">
 
-    <!-- HEADER -->
     <header class="header">
       <h1>Zeus Lite</h1>
       <p class="subtitle">Product filter generator</p>
     </header>
 
-    <!-- STATUS -->
     <section class="status">
       <span class="mode-pill" id="modeLabel">Zeus Lite</span>
-      <p class="status-main" id="counter">
-        Generations remaining today: 3 / 3
-      </p>
-      <p class="status-note" id="statusNote">
-        Each generation highlights one product rising in attention today.
-      </p>
+      <p class="status-main" id="counter"></p>
+      <p class="status-note" id="statusNote"></p>
     </section>
 
-    <!-- ACTION -->
     <section class="action">
-      <button id="generateBtn">
-        Generate product
-      </button>
-      <p class="hint">
-        Each generation surfaces one product worth testing today.
-      </p>
+      <button id="generateBtn">Generate product</button>
     </section>
 
-    <!-- OUTPUT -->
     <section class="result">
-      <pre id="output">
-Click “Generate product” to receive today’s insights.
-      </pre>
+      <pre id="output"></pre>
     </section>
 
   </main>
 
-  <script src="app.js"></script>
 </body>
 </html>
