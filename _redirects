@@ -1,4 +1,4 @@
-/app/*   /lite.html   200
-/app     /lite.html   200
-/app/    /lite.html   200
-/        /lite.html   302
+/app    /lite.html   301!
+/app/   /lite.html   301!
+/app/*  /lite.html   301!
+/       /lite.html   301!
