@@ -1,9 +1,8 @@
-import Stripe from "stripe";
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-export async function handler(event) {
+exports.handler = async (event) => {
   const sig = event.headers["stripe-signature"];
+
   let stripeEvent;
 
   try {
@@ -31,6 +30,6 @@ export async function handler(event) {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ received: true }),
+    body: "Received",
   };
-}
+};
