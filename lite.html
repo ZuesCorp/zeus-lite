@@ -1,44 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Zeus Lite</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zeus Lite</title>
 
-  <main class="container">
+    <!-- Absolute paths so /app/* routes don't break asset loading -->
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
 
-    <header class="header">
-      <h1>Zeus Lite</h1>
-      <p class="subtitle">Daily ecommerce product intelligence</p>
-    </header>
+  <body>
+    <main class="container">
+      <header class="header">
+        <div class="title-row">
+          <h1>Zeus Lite</h1>
+          <span id="modeLabel" class="pill">Zeus Lite</span>
+        </div>
 
-    <section class="status">
-      <div class="mode-pill" id="modeLabel"></div>
-      <p id="counter" class="status-main"></p>
-      <p id="statusNote" class="status-note">
-        You can generate up to 3 product ideas per day.
-      </p>
-    </section>
+        <p class="subtitle">Daily ecommerce product intelligence</p>
+      </header>
 
-    <section class="action">
-      <button id="generateBtn">Generate product</button>
-      <p class="hint">
-        Each generation surfaces one product worth testing today.
-      </p>
-    </section>
+      <section class="card">
+        <div class="row">
+          <div id="counter" class="counter">Generations remaining today: 3 / 3</div>
+        </div>
 
-    <section class="result">
-      <pre id="output">
-Click "Generate product" to see today's first product.
-      </pre>
-    </section>
+        <p class="muted">You can generate up to 3 product ideas per day.</p>
 
-  </main>
+        <button id="generateBtn" class="btn" type="button">Generate product</button>
 
-  <script src="app.js"></script>
-</body>
+        <p class="hint">Each generation surfaces one product worth testing today.</p>
+      </section>
+
+      <section class="card">
+        <pre id="output" class="output">Click "Generate product" to see today's first product.</pre>
+      </section>
+
+      <footer class="footer">
+        <p class="muted">No hype. Just signal.</p>
+      </footer>
+    </main>
+  </body>
 </html>
-
