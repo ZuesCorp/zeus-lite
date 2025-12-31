@@ -1,2 +1,2 @@
-/app/*   /404.html   404
-/app     /lite.html  200
+ /app      /lite.html   200
+ /app/*    /lite.html   200
