@@ -1,7 +1,2 @@
-/lite      /lite.html  200
-/lite/*    /lite.html  200
-
-/app       /lite       301!
-/app/*     /lite       301!
-
-/*         /lite       301!
+/app     /lite.html  200
+/app/*   /lite.html  200
