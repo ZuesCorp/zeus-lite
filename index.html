@@ -1,79 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Zeus Lite</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <title>Zeus Lite – Idea Generator</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <main class="container">
+  <div class="container">
+    <h1>💡 Zeus Lite</h1>
+    <p>Click the button to generate a business idea</p>
 
-    <div id="paywall">
-      <header class="header">
-        <h1>Zeus Lite</h1>
-        <p class="subtitle">A daily product filter for ecommerce operators.</p>
-      </header>
+    <button id="generateBtn">Generate Idea</button>
 
-      <section class="action">
-        <p class="status-main">
-          Zeus Lite shows a small number of products worth testing each day.
-        </p>
-        <p class="status-note">
-          No hype. No endless scrolling. Just signal.
-        </p>
-      </section>
-
-      <section class="action">
-        <p class="price">$9.99 / month</p>
-        <a href="https://buy.stripe.com/4gM5kDf0LeZyfIz51fbsc00" class="cta-button">
-          Start Zeus Lite
-        </a>
-      </section>
+    <div id="loading" class="hidden">
+      <div class="spinner"></div>
+      <p>Thinking...</p>
     </div>
 
-    <div id="app" style="display:none;">
-      <header class="header">
-        <h1>Zeus Lite</h1>
-        <p class="subtitle">Daily ecommerce product intelligence</p>
-      </header>
-
-      <section class="status">
-        <div class="mode-pill" id="modeLabel"></div>
-        <p id="counter" class="status-main"></p>
-        <p id="statusNote" class="status-note"></p>
-      </section>
-
-      <section class="action">
-        <button id="generateBtn">Generate product</button>
-        <p class="hint">Each generation surfaces one product.</p>
-      </section>
-
-      <section class="result">
-        <pre id="output"></pre>
-      </section>
+    <div id="result" class="hidden">
+      <h2 id="ideaTitle"></h2>
+      <p id="ideaDescription"></p>
     </div>
-
-  </main>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const key = "zeus_paid";
-      const params = new URLSearchParams(window.location.search);
-
-      if (params.get("paid") === "1") {
-        localStorage.setItem(key, "true");
-        window.history.replaceState({}, "", window.location.pathname);
-      }
-
-      const paid = localStorage.getItem(key) === "true";
-      document.getElementById("app").style.display = paid ? "block" : "none";
-      document.getElementById("paywall").style.display = paid ? "none" : "block";
-    });
-  </script>
+  </div>
 
   <script src="app.js"></script>
 </body>
 </html>
-
