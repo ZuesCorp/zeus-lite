@@ -4,6 +4,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const generateBtn = el("generateBtn");
   const loading = el("loading");
   const result = el("result");
+  const limitMessage = el("limitMessage");
 
   const ideaTitle = el("ideaTitle");
   const what = el("what");
@@ -11,7 +12,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const money = el("money");
   const why = el("why");
 
-  if (!generateBtn || !loading || !result || !ideaTitle || !what || !who || !money || !why) {
+  if (!generateBtn || !loading || !result || !limitMessage || !ideaTitle || !what || !who || !money || !why) {
     console.error("Missing required elements. Check your HTML ids.");
     return;
   }
@@ -124,35 +125,43 @@ window.addEventListener("DOMContentLoaded", () => {
     return products[Math.floor(Math.random() * products.length)];
   }
 
-  function showLimitMessage() {
-    result.classList.remove("hidden");
+  function showLimitOnly() {
     loading.classList.add("hidden");
+    result.classList.add("hidden");
+    limitMessage.classList.remove("hidden");
+    generateBtn.disabled = true;
+  }
 
-    ideaTitle.textContent = "Daily limit reached";
-    what.textContent = "You’ve generated 3 products today.";
-    who.textContent = "Come back tomorrow for 3 more.";
-    money.textContent = "N/A";
-    why.textContent = "0";
+  // If they already hit the limit earlier today, show the limit page instantly
+  if (getDailyCount() >= LIMIT_PER_DAY) {
+    showLimitOnly();
   }
 
   generateBtn.addEventListener("click", () => {
     if (getDailyCount() >= LIMIT_PER_DAY) {
-      showLimitMessage();
+      showLimitOnly();
       return;
     }
 
-    generateBtn.disabled = true;
+    limitMessage.classList.add("hidden");
     result.classList.add("hidden");
     loading.classList.remove("hidden");
+    generateBtn.disabled = true;
 
     const intervalId = startLoadingMessages();
-    const loadTime = 4000 + Math.floor(Math.random() * 2001); // 4–6 sec
+    const loadTime = 4000 + Math.floor(Math.random() * 2001);
 
     setTimeout(() => {
       if (intervalId) clearInterval(intervalId);
 
       const p = pickRandomProduct();
       incrementDailyCount();
+
+      // If that click just used the last allowed generation, show limit-only message immediately
+      if (getDailyCount() >= LIMIT_PER_DAY) {
+        showLimitOnly();
+        return;
+      }
 
       ideaTitle.textContent = p.product;
       what.textContent = p.description;
@@ -168,3 +177,4 @@ window.addEventListener("DOMContentLoaded", () => {
     }, loadTime);
   });
 });
+
