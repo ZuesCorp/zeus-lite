@@ -10,18 +10,28 @@
 
   <div class="container">
     <h1>Zeus Lite</h1>
-    <p class="subtitle">Instant business idea generator</p>
+    <p class="subtitle">Clear business ideas. No guesswork.</p>
 
-    <button id="generateBtn">Generate Idea</button>
+    <button id="generateBtn">Generate My First Idea</button>
 
     <div id="loading" class="hidden">
       <div class="spinner"></div>
-      <p>Generating idea...</p>
+      <p>Finding a strong idea...</p>
     </div>
 
     <div id="result" class="hidden">
       <h2 id="ideaTitle"></h2>
-      <p id="ideaDescription"></p>
+
+      <div class="idea-block"><strong>What it is:</strong> <span id="what"></span></div>
+      <div class="idea-block"><strong>Who it’s for:</strong> <span id="who"></span></div>
+      <div class="idea-block"><strong>How it makes money:</strong> <span id="money"></span></div>
+      <div class="idea-block"><strong>Why it works:</strong> <span id="why"></span></div>
+
+      <div class="lock">🔒 Unlock unlimited ideas + deeper breakdowns</div>
+
+      <a class="upgrade-btn" href="https://your-stripe-link-here">
+        Upgrade for Full Access
+      </a>
     </div>
   </div>
 
