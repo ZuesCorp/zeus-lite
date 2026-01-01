@@ -124,7 +124,6 @@ button:disabled {
   letter-spacing: 0.3px;
 }
 
-/* Info blocks */
 .idea-block {
   margin-top: 18px;
   font-size: 16px;
@@ -139,7 +138,6 @@ button:disabled {
   color: rgba(255,255,255,0.92);
 }
 
-/* Limit message */
 #limitMessage {
   margin-top: 42px;
   text-align: left;
