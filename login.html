@@ -1,41 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Zeus Lite — Login</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-</head>
-<body>
-  <div class="container">
-    <h1>Zeus Lite</h1>
-    <p class="subtitle">Login to access the generator.</p>
+<div class="container">
+  <h1>Zeus Lite</h1>
+  <p class="subtitle">Log in to access the generator.</p>
 
-    <button type="button" id="loginBtn">Log in / Sign up</button>
-
-    <div class="sample" style="margin-top:24px;">
-      <p style="color: rgba(255,255,255,0.72); line-height:1.6;">
-        After logging in, you’ll be sent to the generator automatically.
-      </p>
-    </div>
+  <div class="idea-block">
+    <strong>Status:</strong> <span id="statusText">Checking…</span>
   </div>
 
-  <script>
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      if (window.netlifyIdentity) window.netlifyIdentity.open();
-    });
+  <button id="continueBtn" type="button" class="hidden">Continue to Generator</button>
 
-    function goIfLoggedIn() {
-      const user = window.netlifyIdentity && window.netlifyIdentity.currentUser();
-      if (user) window.location.href = "/lite.html";
-    }
+  <a id="buyBtn" class="primary-link" href="YOUR_STRIPE_PAYMENT_LINK_HERE">
+    Buy Zeus Lite ($9.99/mo)
+  </a>
 
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", goIfLoggedIn);
-      window.netlifyIdentity.on("login", () => window.location.href = "/lite.html");
-      window.netlifyIdentity.init();
-    }
-  </script>
-</body>
-</html>
+  <p style="margin-top:12px; opacity:.8; font-size:.95rem;">
+    After checkout you’ll be sent back here and auto-unlocked.
+  </p>
+</div>
+
+<script>
+(function () {
+  function qs(name) { return new URLSearchParams(location.search).get(name); }
+
+  // If Stripe sent them back with ?paid=1, unlock.
+  if (qs("paid") === "1") {
+    try { localStorage.setItem("zeusLitePaid", "1"); } catch (e) {}
+    // Clean URL, then go to app
+    location.replace("/app");
+    return;
+  }
+
+  var paid = false;
+  try { paid = localStorage.getItem("zeusLitePaid") === "1"; } catch (e) {}
+
+  var statusText = document.getElementById("statusText");
+  var continueBtn = document.getElementById("continueBtn");
+
+  if (paid) {
+    statusText.textContent = "Unlocked ✅";
+    continueBtn.classList.remove("hidden");
+    continueBtn.onclick = function () { location.href = "/app"; };
+  } else {
+    statusText.textContent = "Locked 🔒 (purchase required)";
+  }
+})();
+</script>
