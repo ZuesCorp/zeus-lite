@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const why = el("why");
 
   if (!generateBtn || !loading || !result || !limitMessage || !ideaTitle || !what || !who || !money || !why) {
-    console.error("Missing required elements. Check your HTML ids.");
+    console.error("Missing required elements.");
     return;
   }
 
@@ -37,87 +37,74 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function safeGet(key) {
     try { return localStorage.getItem(key); }
-    catch (_) { return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null; }
+    catch { return memoryStore[key] ?? null; }
   }
 
   function safeSet(key, value) {
     try { localStorage.setItem(key, value); }
-    catch (_) { memoryStore[key] = value; }
+    catch { memoryStore[key] = value; }
   }
 
   function todayKey() {
     const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   }
 
   function getDailyCount() {
     const today = todayKey();
-    const savedDate = safeGet(DATE_KEY);
-
-    if (savedDate !== today) {
+    if (safeGet(DATE_KEY) !== today) {
       safeSet(DATE_KEY, today);
       safeSet(COUNT_KEY, "0");
       return 0;
     }
-
-    const raw = safeGet(COUNT_KEY);
-    const num = parseInt(raw || "0", 10);
-    return Number.isFinite(num) ? num : 0;
+    return parseInt(safeGet(COUNT_KEY) || "0", 10);
   }
 
   function incrementDailyCount() {
-    const current = getDailyCount();
-    safeSet(COUNT_KEY, String(current + 1));
-    return current + 1;
+    const c = getDailyCount() + 1;
+    safeSet(COUNT_KEY, String(c));
+    return c;
   }
 
   function startLoadingMessages() {
-    if (!loadingText) return null;
-
     let i = 0;
     loadingText.textContent = loadingMessages[i];
-
-    const interval = setInterval(() => {
+    return setInterval(() => {
       i = (i + 1) % loadingMessages.length;
       loadingText.textContent = loadingMessages[i];
     }, 900);
-
-    return interval;
   }
 
   const products = [
     {
       product: "Hair dryer (travel, folding)",
-      description: "Compact dryer with 2 heat settings and fast dry time.",
-      whyBuy: "Saves time and avoids weak hotel dryers.",
-      likelihood: "High"
+      description: "Compact, high-output travel dryer designed to dry hair fast without taking up suitcase space or relying on weak hotel units.",
+      whyBuy: "Solves a recurring travel annoyance and replaces an unreliable experience with a guaranteed outcome.",
+      likelihood: 88
     },
     {
       product: "Silicone sink strainer (universal)",
-      description: "Flexible strainer that catches food scraps and hair.",
-      whyBuy: "Reduces clogs and gross drain smells.",
-      likelihood: "High"
+      description: "Flexible, heat-resistant strainer that captures food scraps and hair before they cause clogs.",
+      whyBuy: "Prevents an expensive, frustrating problem with a one-time low-cost purchase.",
+      likelihood: 91
     },
     {
       product: "Under-sink leak alarm (battery)",
-      description: "Small sensor that alerts you the second it detects water.",
-      whyBuy: "Prevents expensive water damage before it spreads.",
-      likelihood: "Medium-High"
+      description: "Small water-detection device that triggers an alert the moment moisture is detected under sinks.",
+      whyBuy: "Buys reaction time and prevents damage that usually costs hundreds or thousands to fix.",
+      likelihood: 79
     },
     {
       product: "Reusable lint roller (washable)",
-      description: "Sticky roller that rinses clean and works again.",
-      whyBuy: "No refills, great for pet hair and clothes.",
-      likelihood: "High"
+      description: "Washable adhesive roller that removes hair and lint without disposable refills.",
+      whyBuy: "Replaces repeat purchases with a single durable tool that works daily.",
+      likelihood: 86
     },
     {
       product: "Magnetic charging cable (3-in-1)",
-      description: "One cable that snaps in and charges common devices.",
-      whyBuy: "Less cable mess and fewer broken ports.",
-      likelihood: "High"
+      description: "Single magnetic cable that charges multiple device types and protects ports from wear.",
+      whyBuy: "Reduces cable clutter and device damage while improving daily convenience.",
+      likelihood: 84
     }
   ];
 
@@ -132,7 +119,6 @@ window.addEventListener("DOMContentLoaded", () => {
     generateBtn.disabled = true;
   }
 
-  // If they already hit the limit earlier today, show the limit page instantly
   if (getDailyCount() >= LIMIT_PER_DAY) {
     showLimitOnly();
   }
@@ -152,12 +138,11 @@ window.addEventListener("DOMContentLoaded", () => {
     const loadTime = 4000 + Math.floor(Math.random() * 2001);
 
     setTimeout(() => {
-      if (intervalId) clearInterval(intervalId);
+      clearInterval(intervalId);
 
       const p = pickRandomProduct();
       incrementDailyCount();
 
-      // If that click just used the last allowed generation, show limit-only message immediately
       if (getDailyCount() >= LIMIT_PER_DAY) {
         showLimitOnly();
         return;
@@ -166,10 +151,8 @@ window.addEventListener("DOMContentLoaded", () => {
       ideaTitle.textContent = p.product;
       what.textContent = p.description;
       who.textContent = p.whyBuy;
-      money.textContent = p.likelihood;
-
-      const remaining = Math.max(0, LIMIT_PER_DAY - getDailyCount());
-      why.textContent = String(remaining);
+      money.textContent = `${p.likelihood}% likelihood of purchase`;
+      why.textContent = String(Math.max(0, LIMIT_PER_DAY - getDailyCount()));
 
       loading.classList.add("hidden");
       result.classList.remove("hidden");
@@ -177,4 +160,3 @@ window.addEventListener("DOMContentLoaded", () => {
     }, loadTime);
   });
 });
-
