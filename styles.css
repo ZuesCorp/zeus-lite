@@ -1,224 +1,178 @@
-* { box-sizing: border-box; }
+(function () {
+  function el(id) { return document.getElementById(id); }
 
-:root{
-  --bgTop: #070f2a;
-  --bgMid: #060d24;
-  --bgBot: #040818;
+  function onReady(fn) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+    else fn();
+  }
 
-  --panel: rgba(255,255,255,0.035);
-  --panelBorder: rgba(255,255,255,0.10);
+  onReady(function () {
+    var generateBtn = el("generateBtn");
+    var loading = el("loading");
+    var result = el("result");
+    var limitMessage = el("limitMessage");
 
-  --text: rgba(255,255,255,0.92);
-  --muted: rgba(255,255,255,0.70);
-  --muted2: rgba(255,255,255,0.58);
+    var ideaTitle = el("ideaTitle");
+    var profit = el("what");
+    var moving = el("who");
+    var adAngle = el("money");
+    var likelihood = el("why");
 
-  --shadow: rgba(0,0,0,0.55);
-}
+    if (!generateBtn || !loading || !result || !limitMessage || !ideaTitle || !profit || !moving || !adAngle || !likelihood) {
+      if (window.console && console.error) console.error("Missing required HTML elements. Check IDs in lite.html.");
+      return;
+    }
 
-body{
-  margin: 0;
-  min-height: 100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color: var(--text);
+    var loadingText = loading.getElementsByTagName("p")[0];
 
-  background:
-    radial-gradient(900px 520px at 50% 18%, rgba(255,255,255,0.06), transparent 60%),
-    radial-gradient(1100px 700px at 50% 120%, rgba(0,0,0,0.55), transparent 55%),
-    linear-gradient(180deg, var(--bgTop) 0%, var(--bgMid) 55%, var(--bgBot) 100%);
-}
+    var loadingMessages = [
+      "Finding best product...",
+      "Checking buyer likelihood...",
+      "Scanning demand signals...",
+      "Estimating value per buyer...",
+      "Checking competition density...",
+      "Verifying purchase intent...",
+      "Finalizing pick..."
+    ];
 
-.container{
-  width: 88%;
-  max-width: 1180px;
-  padding: 84px 70px;
-  text-align:center;
+    var LIMIT_PER_DAY = 3;
+    var COUNT_KEY = "zeusLiteDailyCount";
+    var DATE_KEY = "zeusLiteDailyDate";
 
-  border-radius: 28px;
-  background: var(--panel);
-  border: 1px solid var(--panelBorder);
+    function pad2(n) { n = String(n); return n.length === 1 ? "0" + n : n; }
+    function todayKey() {
+      var d = new Date();
+      return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+    }
 
-  box-shadow:
-    0 30px 90px var(--shadow),
-    inset 0 1px 0 rgba(255,255,255,0.07),
-    inset 0 -24px 60px rgba(0,0,0,0.35);
-}
+    function safeGet(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+    function safeSet(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) {}
+    }
 
-h1{
-  margin: 0 0 18px;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: clamp(48px, 7vw, 84px);
-  font-weight: 500;
-  letter-spacing: 0.4px;
-}
+    function getDailyCount() {
+      var today = todayKey();
+      if (safeGet(DATE_KEY) !== today) {
+        safeSet(DATE_KEY, today);
+        safeSet(COUNT_KEY, "0");
+        return 0;
+      }
+      var n = parseInt(safeGet(COUNT_KEY) || "0", 10);
+      return isNaN(n) ? 0 : n;
+    }
 
-.subtitle{
-  margin: 0 0 44px;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: clamp(18px, 2.2vw, 26px);
-  line-height: 1.6;
-  color: var(--muted);
-}
+    function incrementDailyCount() {
+      var c = getDailyCount() + 1;
+      safeSet(COUNT_KEY, String(c));
+      return c;
+    }
 
-/* Primary action link on landing */
-.primary-link{
-  display:inline-block;
-  text-decoration:none;
+    function startLoadingMessages() {
+      if (!loadingText) return null;
+      var i = 0;
+      loadingText.textContent = loadingMessages[i];
+      return setInterval(function () {
+        i = (i + 1) % loadingMessages.length;
+        loadingText.textContent = loadingMessages[i];
+      }, 900);
+    }
 
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 14px;
-  padding: 16px 30px;
+    function show(node) { node.className = node.className.replace(/\bhidden\b/g, "").trim(); }
+    function hide(node) { if (node.className.indexOf("hidden") === -1) node.className += " hidden"; }
 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 600;
+    function showLimitOnly() {
+      hide(loading);
+      hide(result);
+      show(limitMessage);
+      generateBtn.disabled = true;
+    }
 
-  color: rgba(10, 18, 46, 0.92);
-  background: rgba(255,255,255,0.55);
+    var products = [
+      {
+        product: "CarPlay / Android Auto wireless adapter (USB-C)",
+        profitPotential: "Premium perceived value supports higher pricing. Easy upsells (fast-charging cable, magnetic mount) and bundles (2-pack for multiple cars).",
+        whyMoving: "Huge audience with older vehicles that have wired CarPlay. Life-upgrade content performs well because the benefit is instantly understandable.",
+        bestAdAngle: "Turn wired CarPlay into wireless in 10 seconds with a plug-in demo and a clean before/after experience.",
+        likelihood: "86% if you prove compatibility and speed, and remove the 'will this work with my car?' objection."
+      },
+      {
+        product: "Portable mini label printer (Bluetooth)",
+        profitPotential: "Low cost, high perceived utility. Bundles (label rolls, cases) and refill sales add repeat revenue.",
+        whyMoving: "Organization and small-business packing content drives impulse buys. The result is visual and instantly satisfying.",
+        bestAdAngle: "Print clean labels from your phone in seconds. Show messy-before and tidy-after transformations.",
+        likelihood: "82% when you show print quality, app simplicity, and real-world use cases."
+      },
+      {
+        product: "Heated electric lunch box (car + wall plug)",
+        profitPotential: "Premium convenience product with strong gift appeal. Upsells include containers, utensils, and travel bags.",
+        whyMoving: "Workers want hot food without fast food prices. It solves a daily pain with a clear payoff.",
+        bestAdAngle: "Hot lunch anywhere in 20 minutes. Show cold food turning hot while commuting.",
+        likelihood: "78% if you show heat time, leak-proof design, and power compatibility."
+      },
+      {
+        product: "Under-sink leak alarm (battery)",
+        profitPotential: "High perceived value because it prevents expensive damage. Great bundle with batteries or 2-pack offers.",
+        whyMoving: "Homeowners fear water damage. Simple demo content performs well because the benefit is instant.",
+        bestAdAngle: "Place it under the sink and get alerted the second a leak starts. Quick water-on demo.",
+        likelihood: "80% if you prove it is loud, reliable, and easy to install."
+      },
+      {
+        product: "Silicone sink strainer (universal)",
+        profitPotential: "Cheap to source, easy to bundle, strong margin at scale. Multi-pack offers increase AOV.",
+        whyMoving: "Clogs are common and annoying. The fix is simple and instantly understandable.",
+        bestAdAngle: "Stop clogs before they start. Show what it catches in one day and the clean drain after.",
+        likelihood: "90% if the demo is clear and the fit looks universal."
+      }
+    ];
 
-  transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
-}
+    function pickRandom() {
+      return products[Math.floor(Math.random() * products.length)];
+    }
 
-.primary-link:hover{
-  transform: translateY(-1px);
-  opacity: 0.95;
-  background: rgba(255,255,255,0.62);
-}
+    if (getDailyCount() >= LIMIT_PER_DAY) {
+      showLimitOnly();
+    }
 
-button{
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 14px;
-  padding: 18px 34px;
+    function handleClick() {
+      if (getDailyCount() >= LIMIT_PER_DAY) {
+        showLimitOnly();
+        return;
+      }
 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 20px;
-  font-weight: 600;
+      hide(limitMessage);
+      hide(result);
+      show(loading);
+      generateBtn.disabled = true;
 
-  color: rgba(10, 18, 46, 0.92);
-  background: rgba(255,255,255,0.55);
+      var intervalId = startLoadingMessages();
+      var loadTime = 4000 + Math.floor(Math.random() * 2001);
 
-  cursor: pointer;
-  transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
-}
+      setTimeout(function () {
+        if (intervalId) clearInterval(intervalId);
 
-button:hover{
-  transform: translateY(-1px);
-  opacity: 0.95;
-  background: rgba(255,255,255,0.62);
-}
+        var p = pickRandom();
+        incrementDailyCount();
 
-button:disabled{
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
-}
+        if (getDailyCount() >= LIMIT_PER_DAY) {
+          showLimitOnly();
+          return;
+        }
 
-.hidden{ display:none; }
+        ideaTitle.textContent = "Product: " + p.product;
+        profit.textContent = p.profitPotential;
+        moving.textContent = p.whyMoving;
+        adAngle.textContent = p.bestAdAngle;
+        likelihood.textContent = p.likelihood;
 
-#loading{ margin-top: 34px; }
-#loading p{
-  margin-top: 14px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  color: var(--muted2);
-  letter-spacing: 0.2px;
-}
+        hide(loading);
+        show(result);
+        generateBtn.disabled = false;
+      }, loadTime);
+    }
 
-.spinner{
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.20);
-  border-top: 3px solid rgba(255,255,255,0.85);
-  animation: spin 0.9s linear infinite;
-  margin: 0 auto;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-#result{
-  margin-top: 56px;
-  text-align: left;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#ideaTitle{
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: clamp(28px, 3.4vw, 46px);
-  font-weight: 500;
-  margin: 0 0 22px;
-  letter-spacing: 0.2px;
-}
-
-.idea-block{
-  margin-top: 18px;
-  font-size: 18px;
-  line-height: 1.7;
-  color: rgba(255,255,255,0.78);
-}
-
-.idea-block strong{
-  display:block;
-  margin-bottom: 6px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.92);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-#limitMessage{
-  margin-top: 56px;
-  text-align: center;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#limitMessage h2{
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: clamp(28px, 3.4vw, 44px);
-  font-weight: 500;
-  margin: 0 0 14px;
-}
-
-#limitMessage p{
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.7;
-  color: rgba(255,255,255,0.75);
-}
-
-/* Landing sample output */
-.sample{
-  margin-top: 52px;
-  text-align: left;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.sample-title{
-  margin: 0 0 14px;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 28px;
-  font-weight: 500;
-}
-
-.sample-block{
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.02);
-  border-radius: 16px;
-  padding: 18px 18px;
-}
-
-.sample-line{
-  margin-top: 12px;
-  font-size: 16px;
-  line-height: 1.65;
-  color: rgba(255,255,255,0.78);
-}
-
-.sample-line strong{
-  color: rgba(255,255,255,0.92);
-}
+    if (generateBtn.addEventListener) generateBtn.addEventListener("click", handleClick);
+    else generateBtn.onclick = handleClick;
+  });
+})();
