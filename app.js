@@ -8,17 +8,17 @@ const ideas = [
   {
     title: "AI-Powered Niche Product Finder",
     description:
-      "A lightweight AI tool that scans trending marketplaces, social media platforms, and keyword data to identify profitable digital product opportunities. It highlights underserved niches, pricing strategies, and monetization angles, making it ideal for solopreneurs who want fast validation without deep market research."
+      "A lightweight AI tool that scans marketplaces, social platforms, and keyword data to uncover profitable digital product ideas for solopreneurs."
   },
   {
-    title: "Subscription-Based Prompt Library",
+    title: "Subscription Prompt Vault",
     description:
-      "A recurring-revenue platform offering high-conversion AI prompts tailored for creators, marketers, and small business owners. Each prompt is optimized for real-world outcomes like sales copy, product descriptions, and automation workflows, positioning the product as a practical revenue-driving tool."
+      "A monthly subscription offering battle-tested AI prompts for creators, marketers, and founders to generate sales copy and workflows instantly."
   },
   {
-    title: "Automated Lead Magnet Generator",
+    title: "Automated Lead Magnet Builder",
     description:
-      "A tool that instantly creates downloadable lead magnets such as checklists, guides, and mini-courses based on a user's niche. Designed for fast deployment, it helps businesses grow email lists and drive upsells with minimal effort or technical knowledge."
+      "A tool that auto-creates downloadable lead magnets like guides and checklists based on a user's niche to grow email lists fast."
   }
 ];
 
