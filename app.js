@@ -35,7 +35,7 @@
       "Finalizing pick..."
     ];
 
-    var LIMIT_PER_DAY = 15;
+    var LIMIT_PER_DAY = 20;
     var COUNT_KEY = "zeusLiteDailyCount";
     var DATE_KEY = "zeusLiteDailyDate";
 
