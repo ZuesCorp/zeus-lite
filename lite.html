@@ -10,7 +10,7 @@
 
   <div class="container">
     <h1>Zeus Lite</h1>
-    <p class="subtitle">Generate real products with buyer intent.</p>
+    <p class="subtitle">Clear product ideas. No guesswork.</p>
 
     <button id="generateBtn" type="button">Generate Product</button>
 
@@ -20,12 +20,12 @@
     </div>
 
     <div id="result" class="hidden">
-      <h2 id="ideaTitle"></h2>
+      <h2><span class="label">Product:</span> <span id="ideaTitle"></span></h2>
 
-      <div class="idea-block"><strong></strong> <span id="what"></span></div>
-      <div class="idea-block"><strong></strong> <span id="who"></span></div>
-      <div class="idea-block"><strong></strong> <span id="money"></span></div>
-      <div class="idea-block"><strong></strong> <span id="why"></span></div>
+      <div class="idea-block"><strong>Description:</strong> <span id="what"></span></div>
+      <div class="idea-block"><strong>Why you should buy it:</strong> <span id="who"></span></div>
+      <div class="idea-block"><strong>Buyer likelihood to purchase:</strong> <span id="money"></span></div>
+      <div class="idea-block"><strong>Daily uses left:</strong> <span id="why"></span></div>
     </div>
 
     <div style="margin-top:18px; text-align:center;">
@@ -36,3 +36,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
