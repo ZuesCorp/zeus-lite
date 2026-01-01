@@ -8,9 +8,8 @@ const who = document.getElementById("who");
 const money = document.getElementById("money");
 const why = document.getElementById("why");
 
+// the <p> inside #loading
 const loadingText = loading ? loading.querySelector("p") : null;
-
-let hasGenerated = false;
 
 const loadingMessages = [
   "Finding best product…",
@@ -21,30 +20,23 @@ const loadingMessages = [
   "Checking price sensitivity…",
   "Verifying pain-point strength…",
   "Scoring monetization clarity…",
-  "Reducing fluff… keeping profit…"
+  "Finalizing idea…"
 ];
 
 const ideas = [
   {
     title: "Service Price Sheet Builder",
-    what: "Instant pricing sheet for a local service niche.",
+    what: "Instant pricing sheet for one local service niche.",
     who: "Contractors quoting jobs daily.",
-    money: "Charge $49–$149 per build or $29/mo updates.",
+    money: "$49–$149 per build or $29/mo updates.",
     why: "Clear pricing closes faster and cuts negotiation."
   },
   {
     title: "Niche Checklist Pack",
-    what: "Downloadable checklists for one specific business type.",
+    what: "Downloadable checklists for one business type.",
     who: "Operators who want fewer mistakes.",
-    money: "$19–$49 per pack + upsell a $99 consult.",
+    money: "$19–$49 per pack + add-on consult.",
     why: "People pay to avoid fines, rework, and headaches."
-  },
-  {
-    title: "Local Lead Hand-Off List",
-    what: "A small directory that routes leads to specialists.",
-    who: "Service pros who want booked calls.",
-    money: "$50–$250/mo per slot or pay-per-lead.",
-    why: "They pay for work, not theory."
   },
   {
     title: "Quote Follow-Up Template Kit",
@@ -55,16 +47,19 @@ const ideas = [
   },
   {
     title: "Mini Offer Builder",
-    what: "One-page “offer” template for a niche service.",
-    who: "People who can sell but struggle with clarity.",
-    money: "$19–$39 download + upsell $199 setup.",
-    why: "Clear offer = easier yes."
+    what: "One-page offer template for a niche service.",
+    who: "People who sell but lack clarity.",
+    money: "$19–$39 download + $199 setup add-on.",
+    why: "Clear offers get easier yeses."
+  },
+  {
+    title: "Local Lead Hand-Off List",
+    what: "A small directory that routes leads to specialists.",
+    who: "Service pros who want booked calls.",
+    money: "$50–$250/mo per slot or pay-per-lead.",
+    why: "They pay for work, not theory."
   }
 ];
-
-function pickRandomIdea() {
-  return ideas[Math.floor(Math.random() * ideas.length)];
-}
 
 function startLoadingMessages() {
   if (!loadingText) return null;
@@ -81,20 +76,18 @@ function startLoadingMessages() {
 }
 
 generateBtn.addEventListener("click", () => {
-  if (hasGenerated) return;
-  hasGenerated = true;
-
   result.classList.add("hidden");
   loading.classList.remove("hidden");
 
   const intervalId = startLoadingMessages();
 
+  // random 4–6 seconds
   const loadTime = 4000 + Math.floor(Math.random() * 2001);
 
   setTimeout(() => {
     if (intervalId) clearInterval(intervalId);
 
-    const idea = pickRandomIdea();
+    const idea = ideas[Math.floor(Math.random() * ideas.length)];
 
     ideaTitle.textContent = idea.title;
     what.textContent = idea.what;
