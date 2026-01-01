@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zeus Lite — Login</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Zeus Lite</h1>
+    <p class="subtitle">Login to access the generator.</p>
+
+    <button type="button" id="loginBtn">Log in / Sign up</button>
+
+    <div class="sample" style="margin-top:24px;">
+      <p style="color: rgba(255,255,255,0.72); line-height:1.6;">
+        After logging in, you’ll be sent to the generator automatically.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      if (window.netlifyIdentity) window.netlifyIdentity.open();
+    });
+
+    function goIfLoggedIn() {
+      const user = window.netlifyIdentity && window.netlifyIdentity.currentUser();
+      if (user) window.location.href = "/lite.html";
+    }
+
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", goIfLoggedIn);
+      window.netlifyIdentity.on("login", () => window.location.href = "/lite.html");
+      window.netlifyIdentity.init();
+    }
+  </script>
+</body>
+</html>
