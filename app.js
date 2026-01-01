@@ -6,19 +6,29 @@ const ideaDescription = document.getElementById("ideaDescription");
 
 const ideas = [
   {
-    title: "AI-Powered Niche Product Finder",
+    title: "Niche Product Finder",
     description:
-      "A lightweight AI tool that scans marketplaces, social platforms, and keyword data to uncover profitable digital product ideas for solopreneurs."
+      "A lightweight tool that analyzes online trends, marketplaces, and keyword demand to uncover profitable digital product opportunities. Built for solo founders who want fast validation without deep research."
   },
   {
-    title: "Subscription Prompt Vault",
+    title: "Subscription Content Vault",
     description:
-      "A monthly subscription offering battle-tested AI prompts for creators, marketers, and founders to generate sales copy and workflows instantly."
+      "A recurring-revenue platform that delivers ready-to-use business resources for creators and entrepreneurs. Designed to save time while providing consistent value month after month."
   },
   {
-    title: "Automated Lead Magnet Builder",
+    title: "Lead Magnet Builder",
     description:
-      "A tool that auto-creates downloadable lead magnets like guides and checklists based on a user's niche to grow email lists fast."
+      "A simple system that generates downloadable guides, checklists, or mini-courses tailored to a specific niche. Helps businesses grow email lists and convert visitors into customers."
+  },
+  {
+    title: "Micro SaaS Idea Generator",
+    description:
+      "A focused idea engine that produces small, high-margin software concepts designed to solve one clear problem for one specific audience."
+  },
+  {
+    title: "Digital Product Launch Kit",
+    description:
+      "An all-in-one setup that helps creators launch digital products quickly with pricing ideas, positioning angles, and go-to-market guidance."
   }
 ];
 
@@ -34,5 +44,5 @@ generateBtn.addEventListener("click", () => {
 
     loading.classList.add("hidden");
     result.classList.remove("hidden");
-  }, 5000);
+  }, 1800);
 });
