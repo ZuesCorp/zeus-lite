@@ -111,3 +111,9 @@ button:hover {
     transform: rotate(360deg);
   }
 }
+
+#loading p {
+  margin-top: 10px;
+  opacity: 0.9;
+  letter-spacing: 0.2px;
+}
