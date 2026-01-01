@@ -1,3 +1,4 @@
 /app      /lite.html   200
 /app/*    /lite.html   200
+/login  /login.html  200
 /stripe-webhook  /.netlify/functions/stripe-webhook  200
