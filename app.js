@@ -8,7 +8,6 @@ const who = document.getElementById("who");
 const money = document.getElementById("money");
 const why = document.getElementById("why");
 
-// this is the <p> inside #loading (your HTML already has it)
 const loadingText = loading ? loading.querySelector("p") : null;
 
 let hasGenerated = false;
@@ -25,7 +24,6 @@ const loadingMessages = [
   "Reducing fluff… keeping profit…"
 ];
 
-// Keep the idea output short + clean
 const ideas = [
   {
     title: "Service Price Sheet Builder",
@@ -91,7 +89,6 @@ generateBtn.addEventListener("click", () => {
 
   const intervalId = startLoadingMessages();
 
-  // Random loading duration: 4–6 seconds
   const loadTime = 4000 + Math.floor(Math.random() * 2001);
 
   setTimeout(() => {
