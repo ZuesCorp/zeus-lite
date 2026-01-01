@@ -1,163 +1,224 @@
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+:root{
+  --bgTop: #070f2a;
+  --bgMid: #060d24;
+  --bgBot: #040818;
+
+  --panel: rgba(255,255,255,0.035);
+  --panelBorder: rgba(255,255,255,0.10);
+
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.70);
+  --muted2: rgba(255,255,255,0.58);
+
+  --shadow: rgba(0,0,0,0.55);
 }
 
-/* Typography stack inspired by editorial / finance sites */
-body {
-  font-family: Georgia, "Times New Roman", Times, serif;
+body{
   margin: 0;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color: var(--text);
 
-  color: rgba(255,255,255,0.94);
-
-  /* Deep navy editorial background */
   background:
-    linear-gradient(
-      180deg,
-      #0b1533 0%,
-      #0a1430 40%,
-      #09122a 100%
-    );
+    radial-gradient(900px 520px at 50% 18%, rgba(255,255,255,0.06), transparent 60%),
+    radial-gradient(1100px 700px at 50% 120%, rgba(0,0,0,0.55), transparent 55%),
+    linear-gradient(180deg, var(--bgTop) 0%, var(--bgMid) 55%, var(--bgBot) 100%);
 }
 
-/* Main card */
-.container {
-  width: 92%;
-  max-width: 820px;
-  padding: 64px 68px;
+.container{
+  width: 88%;
+  max-width: 1180px;
+  padding: 84px 70px;
+  text-align:center;
 
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
+  border-radius: 28px;
+  background: var(--panel);
+  border: 1px solid var(--panelBorder);
 
   box-shadow:
-    0 30px 80px rgba(0,0,0,0.55);
-
-  text-align: center;
+    0 30px 90px var(--shadow),
+    inset 0 1px 0 rgba(255,255,255,0.07),
+    inset 0 -24px 60px rgba(0,0,0,0.35);
 }
 
-/* Brand title */
-h1 {
+h1{
   margin: 0 0 18px;
-  font-size: 60px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(48px, 7vw, 84px);
   font-weight: 500;
   letter-spacing: 0.4px;
 }
 
-/* Subtitle under Zeus Lite */
-.subtitle {
-  margin: 0 0 38px;
-  font-size: 18px;
+.subtitle{
+  margin: 0 0 44px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(18px, 2.2vw, 26px);
   line-height: 1.6;
-  color: rgba(255,255,255,0.75);
+  color: var(--muted);
 }
 
-/* Button – understated, not flashy */
-button {
+/* Primary action link on landing */
+.primary-link{
+  display:inline-block;
+  text-decoration:none;
+
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 16px 30px;
+
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
 
-  padding: 14px 26px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(10, 18, 46, 0.92);
+  background: rgba(255,255,255,0.55);
 
-  color: #0b1533;
-  background: #ffffff;
+  transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
+}
+
+.primary-link:hover{
+  transform: translateY(-1px);
+  opacity: 0.95;
+  background: rgba(255,255,255,0.62);
+}
+
+button{
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 18px 34px;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+
+  color: rgba(10, 18, 46, 0.92);
+  background: rgba(255,255,255,0.55);
 
   cursor: pointer;
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
 }
 
-button:hover {
-  opacity: 0.92;
+button:hover{
   transform: translateY(-1px);
+  opacity: 0.95;
+  background: rgba(255,255,255,0.62);
 }
 
-button:disabled {
+button:disabled{
   opacity: 0.55;
   cursor: not-allowed;
   transform: none;
 }
 
-/* Loading */
-#loading {
-  margin-top: 28px;
-}
+.hidden{ display:none; }
 
-#loading p {
+#loading{ margin-top: 34px; }
+#loading p{
   margin-top: 14px;
-  font-size: 14px;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: 0.3px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  color: var(--muted2);
+  letter-spacing: 0.2px;
 }
 
-/* Spinner – minimal */
-.spinner {
-  width: 38px;
-  height: 38px;
+.spinner{
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.2);
-  border-top: 3px solid rgba(255,255,255,0.9);
+  border: 3px solid rgba(255,255,255,0.20);
+  border-top: 3px solid rgba(255,255,255,0.85);
   animation: spin 0.9s linear infinite;
   margin: 0 auto;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Results */
-#result {
-  margin-top: 42px;
+#result{
+  margin-top: 56px;
   text-align: left;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Product name */
-#ideaTitle {
-  font-size: 36px;
+#ideaTitle{
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(28px, 3.4vw, 46px);
   font-weight: 500;
   margin: 0 0 22px;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
-/* Info blocks */
-.idea-block {
+.idea-block{
   margin-top: 18px;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.7;
   color: rgba(255,255,255,0.78);
 }
 
-.idea-block strong {
-  display: block;
+.idea-block strong{
+  display:block;
   margin-bottom: 6px;
-  font-weight: 600;
+  font-weight: 700;
   color: rgba(255,255,255,0.92);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Limit message */
-#limitMessage {
-  margin-top: 42px;
-  text-align: left;
+#limitMessage{
+  margin-top: 56px;
+  text-align: center;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-#limitMessage h2 {
-  font-size: 30px;
+#limitMessage h2{
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(28px, 3.4vw, 44px);
   font-weight: 500;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
 }
 
-#limitMessage p {
-  font-size: 16px;
+#limitMessage p{
+  margin: 0;
+  font-size: 18px;
   line-height: 1.7;
+  color: rgba(255,255,255,0.75);
+}
+
+/* Landing sample output */
+.sample{
+  margin-top: 52px;
+  text-align: left;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sample-title{
+  margin: 0 0 14px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.sample-block{
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.02);
+  border-radius: 16px;
+  padding: 18px 18px;
+}
+
+.sample-line{
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.65;
   color: rgba(255,255,255,0.78);
 }
 
-/* Utility */
-.hidden {
-  display: none;
+.sample-line strong{
+  color: rgba(255,255,255,0.92);
 }
