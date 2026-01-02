@@ -8,17 +8,14 @@
 </head>
 
 <body>
+  <script src="app.js"></script>
   <script>
     (function () {
-      var PAID_KEY = "__zl_k9P7vQ2bA1";
-
-      try {
-        if (localStorage.getItem(PAID_KEY) !== "1") {
-          location.replace("login.html");
-        }
-      } catch (e) {
+      if (!window.ZeusAuth) {
         location.replace("login.html");
+        return;
       }
+      ZeusAuth.requirePaid("login.html");
     })();
   </script>
 
@@ -62,7 +59,5 @@
       <p>Come back tomorrow for more ideas.</p>
     </div>
   </div>
-
-  <script src="app.js"></script>
 </body>
 </html>
