@@ -8,11 +8,12 @@
 </head>
 
 <body>
-  <!-- PAYWALL GUARD: if not paid, bounce to login -->
   <script>
     (function () {
+      var PAID_KEY = "__zl_k9P7vQ2bA1";
+
       try {
-        if (localStorage.getItem("zeusLitePaid") !== "1") {
+        if (localStorage.getItem(PAID_KEY) !== "1") {
           location.replace("login.html");
         }
       } catch (e) {
@@ -27,13 +28,11 @@
 
     <button id="generateBtn" type="button">Generate</button>
 
-    <!-- Loading state -->
     <div id="loading" class="hidden">
       <div class="spinner"></div>
       <p></p>
     </div>
 
-    <!-- Result block -->
     <div id="result" class="hidden">
       <h2 id="ideaTitle"></h2>
 
@@ -58,14 +57,12 @@
       </div>
     </div>
 
-    <!-- Daily limit message -->
     <div id="limitMessage" class="hidden">
       <h2>Daily limit reached</h2>
       <p>Come back tomorrow for more ideas.</p>
     </div>
   </div>
 
-  <!-- Generator logic -->
   <script src="app.js"></script>
 </body>
 </html>
