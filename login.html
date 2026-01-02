@@ -35,28 +35,27 @@
 
   <script>
     (function () {
+      var PAID_KEY = "__zl_k9P7vQ2bA1";
+
       function qs(name) {
         return new URLSearchParams(location.search).get(name);
       }
 
-      // 1. If already unlocked on this device, skip paywall entirely
       try {
-        if (localStorage.getItem("zeusLitePaid") === "1") {
+        if (localStorage.getItem(PAID_KEY) === "1") {
           location.replace("lite.html");
           return;
         }
       } catch (e) {}
 
-      // 2. If Stripe sent them back with ?paid=1, unlock and forward
       if (qs("paid") === "1") {
-        try { localStorage.setItem("zeusLitePaid", "1"); } catch (e) {}
+        try { localStorage.setItem(PAID_KEY, "1"); } catch (e) {}
         location.replace("lite.html");
         return;
       }
 
-      // 3. Otherwise, show locked / unlocked UI
       var paid = false;
-      try { paid = localStorage.getItem("zeusLitePaid") === "1"; } catch (e) {}
+      try { paid = localStorage.getItem(PAID_KEY) === "1"; } catch (e) {}
 
       var statusText = document.getElementById("statusText");
       var continueBtn = document.getElementById("continueBtn");
