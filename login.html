@@ -1,46 +1,76 @@
-<div class="container">
-  <h1>Zeus Lite</h1>
-  <p class="subtitle">Log in to access the generator.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zeus Lite — Login</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
 
-  <div class="idea-block">
-    <strong>Status:</strong> <span id="statusText">Checking…</span>
+<body>
+  <div class="container">
+    <h1>Zeus Lite</h1>
+    <p class="subtitle">Log in to access the generator.</p>
+
+    <div class="idea-block">
+      <strong>Status:</strong> <span id="statusText">Checking…</span>
+    </div>
+
+    <button id="continueBtn" type="button" class="hidden">
+      Continue to Generator
+    </button>
+
+    <a
+      id="buyBtn"
+      class="primary-link"
+      href="https://buy.stripe.com/4gM5kDf0LeZyfIz51fbsc00"
+    >
+      Buy Zeus Lite ($9.99/mo)
+    </a>
+
+    <p style="margin-top:12px; opacity:.8; font-size:.95rem;">
+      After checkout you’ll be sent back here and auto-unlocked.
+    </p>
   </div>
 
-  <button id="continueBtn" type="button" class="hidden">Continue to Generator</button>
+  <script>
+    (function () {
+      function qs(name) {
+        return new URLSearchParams(location.search).get(name);
+      }
 
-  <a id="buyBtn" class="primary-link" href="Yhttps://buy.stripe.com/4gM5kDf0LeZyfIz51fbsc00">
-    Buy Zeus Lite ($9.99/mo)
-  </a>
+      // 1. If already unlocked on this device, skip paywall entirely
+      try {
+        if (localStorage.getItem("zeusLitePaid") === "1") {
+          location.replace("lite.html");
+          return;
+        }
+      } catch (e) {}
 
-  <p style="margin-top:12px; opacity:.8; font-size:.95rem;">
-    After checkout you’ll be sent back here and auto-unlocked.
-  </p>
-</div>
+      // 2. If Stripe sent them back with ?paid=1, unlock and forward
+      if (qs("paid") === "1") {
+        try { localStorage.setItem("zeusLitePaid", "1"); } catch (e) {}
+        location.replace("lite.html");
+        return;
+      }
 
-<script>
-(function () {
-  function qs(name) { return new URLSearchParams(location.search).get(name); }
+      // 3. Otherwise, show locked / unlocked UI
+      var paid = false;
+      try { paid = localStorage.getItem("zeusLitePaid") === "1"; } catch (e) {}
 
-  // If Stripe sent them back with ?paid=1, unlock.
-  if (qs("paid") === "1") {
-    try { localStorage.setItem("zeusLitePaid", "1"); } catch (e) {}
-    // Clean URL, then go to app
-    location.replace("/app");
-    return;
-  }
+      var statusText = document.getElementById("statusText");
+      var continueBtn = document.getElementById("continueBtn");
 
-  var paid = false;
-  try { paid = localStorage.getItem("zeusLitePaid") === "1"; } catch (e) {}
-
-  var statusText = document.getElementById("statusText");
-  var continueBtn = document.getElementById("continueBtn");
-
-  if (paid) {
-    statusText.textContent = "Unlocked ✅";
-    continueBtn.classList.remove("hidden");
-    continueBtn.onclick = function () { location.href = "/app"; };
-  } else {
-    statusText.textContent = "Locked 🔒 (purchase required)";
-  }
-})();
-</script>
+      if (paid) {
+        statusText.textContent = "Unlocked ✅";
+        continueBtn.classList.remove("hidden");
+        continueBtn.onclick = function () {
+          location.href = "lite.html";
+        };
+      } else {
+        statusText.textContent = "Locked 🔒 (purchase required)";
+      }
+    })();
+  </script>
+</body>
+</html>
