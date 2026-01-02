@@ -33,39 +33,27 @@
     </p>
   </div>
 
+  <script src="app.js"></script>
   <script>
     (function () {
-      var PAID_KEY = "__zl_k9P7vQ2bA1";
+      var statusText = document.getElementById("statusText");
+      var continueBtn = document.getElementById("continueBtn");
+      var buyBtn = document.getElementById("buyBtn");
 
-      function qs(name) {
-        return new URLSearchParams(location.search).get(name);
-      }
-
-      try {
-        if (localStorage.getItem(PAID_KEY) === "1") {
-          location.replace("lite.html");
-          return;
-        }
-      } catch (e) {}
-
-      if (qs("paid") === "1") {
-        try { localStorage.setItem(PAID_KEY, "1"); } catch (e) {}
-        location.replace("lite.html");
+      if (!window.ZeusAuth) {
+        statusText.textContent = "Error loading auth";
         return;
       }
 
-      var paid = false;
-      try { paid = localStorage.getItem(PAID_KEY) === "1"; } catch (e) {}
+      if (ZeusAuth.handleStripeReturn("lite.html")) {
+        return;
+      }
 
-      var statusText = document.getElementById("statusText");
-      var continueBtn = document.getElementById("continueBtn");
-
-      if (paid) {
+      if (ZeusAuth.isPaid()) {
         statusText.textContent = "Unlocked ✅";
         continueBtn.classList.remove("hidden");
-        continueBtn.onclick = function () {
-          location.href = "lite.html";
-        };
+        continueBtn.onclick = function () { location.href = "lite.html"; };
+        if (buyBtn) buyBtn.classList.add("hidden");
       } else {
         statusText.textContent = "Locked 🔒 (purchase required)";
       }
