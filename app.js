@@ -1,4 +1,88 @@
 (function () {
+  var PAID_UNTIL_KEY = "__zl_u9xT2mPq";
+  var PAID_SIG_KEY = "__zl_s4Vn8cR1";
+  var STRIPE_PARAM = "paid";
+  var SIG_SALT = "zL:2026:k9P7vQ2bA1";
+
+  function nowMs() { return Date.now(); }
+
+  function hash(str) {
+    var h = 5381, i = str.length;
+    while (i) h = (h * 33) ^ str.charCodeAt(--i);
+    return (h >>> 0).toString(36);
+  }
+
+  function makeSig(untilMs) {
+    return hash(SIG_SALT + "|" + String(untilMs));
+  }
+
+  function safeGet(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function safeSet(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) {}
+  }
+  function safeDel(key) {
+    try { localStorage.removeItem(key); } catch (e) {}
+  }
+
+  function getPaidUntil() {
+    var raw = safeGet(PAID_UNTIL_KEY);
+    var n = parseInt(raw || "0", 10);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function isPaid() {
+    var until = getPaidUntil();
+    if (!until) return false;
+    if (nowMs() > until) return false;
+
+    var sig = safeGet(PAID_SIG_KEY) || "";
+    return sig === makeSig(until);
+  }
+
+  function setPaidDays(days) {
+    var d = typeof days === "number" && days > 0 ? days : 30;
+    var until = nowMs() + d * 24 * 60 * 60 * 1000;
+    safeSet(PAID_UNTIL_KEY, String(until));
+    safeSet(PAID_SIG_KEY, makeSig(until));
+  }
+
+  function clearPaid() {
+    safeDel(PAID_UNTIL_KEY);
+    safeDel(PAID_SIG_KEY);
+  }
+
+  function qs(name) {
+    try { return new URLSearchParams(location.search).get(name); }
+    catch (e) { return null; }
+  }
+
+  function requirePaid(redirectTo) {
+    if (!isPaid()) {
+      location.replace(redirectTo);
+      return false;
+    }
+    return true;
+  }
+
+  function handleStripeReturn(goToUrl) {
+    if (qs(STRIPE_PARAM) === "1") {
+      setPaidDays(30);
+      location.replace(goToUrl);
+      return true;
+    }
+    return false;
+  }
+
+  window.ZeusAuth = {
+    isPaid: isPaid,
+    setPaidDays: setPaidDays,
+    clearPaid: clearPaid,
+    requirePaid: requirePaid,
+    handleStripeReturn: handleStripeReturn
+  };
+
   function el(id) { return document.getElementById(id); }
 
   function onReady(fn) {
@@ -8,6 +92,8 @@
 
   onReady(function () {
     var generateBtn = el("generateBtn");
+    if (!generateBtn) return;
+
     var loading = el("loading");
     var result = el("result");
     var limitMessage = el("limitMessage");
@@ -18,8 +104,7 @@
     var adAngle = el("money");
     var likelihood = el("why");
 
-    if (!generateBtn || !loading || !result || !limitMessage || !ideaTitle || !profit || !moving || !adAngle || !likelihood) {
-      if (window.console && console.error) console.error("Missing required HTML elements. Check IDs in lite.html.");
+    if (!loading || !result || !limitMessage || !ideaTitle || !profit || !moving || !adAngle || !likelihood) {
       return;
     }
 
@@ -45,27 +130,27 @@
       return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
     }
 
-    function safeGet(key) {
+    function safeGet2(key) {
       try { return localStorage.getItem(key); } catch (e) { return null; }
     }
-    function safeSet(key, value) {
+    function safeSet2(key, value) {
       try { localStorage.setItem(key, value); } catch (e) {}
     }
 
     function getDailyCount() {
       var today = todayKey();
-      if (safeGet(DATE_KEY) !== today) {
-        safeSet(DATE_KEY, today);
-        safeSet(COUNT_KEY, "0");
+      if (safeGet2(DATE_KEY) !== today) {
+        safeSet2(DATE_KEY, today);
+        safeSet2(COUNT_KEY, "0");
         return 0;
       }
-      var n = parseInt(safeGet(COUNT_KEY) || "0", 10);
+      var n = parseInt(safeGet2(COUNT_KEY) || "0", 10);
       return isNaN(n) ? 0 : n;
     }
 
     function incrementDailyCount() {
       var c = getDailyCount() + 1;
-      safeSet(COUNT_KEY, String(c));
+      safeSet2(COUNT_KEY, String(c));
       return c;
     }
 
