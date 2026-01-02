@@ -2,52 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zeus Lite — Generator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
+  <!-- PAYWALL GUARD: if not paid, bounce to login -->
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("zeusLitePaid") !== "1") {
+          location.replace("login.html");
+        }
+      } catch (e) {
+        location.replace("login.html");
+      }
+    })();
+  </script>
 
   <div class="container">
     <h1>Zeus Lite</h1>
-    <p class="subtitle">For solo eCommerce sellers who need products people actually buy.</p>
+    <p class="subtitle">Clear product ideas. No guesswork.</p>
 
-    <button id="generateBtn" type="button">Generate Product</button>
+    <button id="generateBtn" type="button">Generate</button>
 
+    <!-- Loading state -->
     <div id="loading" class="hidden">
       <div class="spinner"></div>
-      <p>Finding best product…</p>
+      <p></p>
     </div>
 
+    <!-- Result block -->
     <div id="result" class="hidden">
       <h2 id="ideaTitle"></h2>
 
       <div class="idea-block">
-        <strong>Profit potential:</strong> <span id="what"></span>
+        <strong>Profit potential</strong>
+        <div id="what"></div>
       </div>
 
       <div class="idea-block">
-        <strong>Why it’s moving:</strong> <span id="who"></span>
+        <strong>Why it’s moving</strong>
+        <div id="who"></div>
       </div>
 
       <div class="idea-block">
-        <strong>Best ad angle:</strong> <span id="money"></span>
+        <strong>Best ad angle</strong>
+        <div id="money"></div>
       </div>
 
       <div class="idea-block">
-        <strong>Purchase likelihood:</strong> <span id="why"></span>
+        <strong>Purchase likelihood</strong>
+        <div id="why"></div>
       </div>
     </div>
 
+    <!-- Daily limit message -->
     <div id="limitMessage" class="hidden">
       <h2>Daily limit reached</h2>
-      <p>
-        You’ve hit your max generation limit for today.
-        Try again tomorrow for more generations.
-      </p>
+      <p>Come back tomorrow for more ideas.</p>
     </div>
   </div>
 
+  <!-- Generator logic -->
   <script src="app.js"></script>
 </body>
 </html>
