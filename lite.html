@@ -1,128 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zeus Lite — Generator</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+<body>
+  <div class="container">
+    <h1>Zeus Lite</h1>
+    <p class="subtitle">For solo eCommerce sellers who need products people actually buy.</p>
 
-  <body>
-    <div class="container">
-      <h1>Zeus Lite</h1>
-      <p class="subtitle">Generator</p>
+    <button id="genBtn" type="button">Generate Product</button>
 
-      <div class="idea-block" id="accessBanner">
-        <strong>Access:</strong> <span id="accessText">Checking…</span>
-      </div>
-
-      <!-- Your generator UI goes here -->
-      <div class="idea-block" style="text-align: left">
-        <strong>Prompt</strong>
-        <textarea
-          id="prompt"
-          placeholder="Describe what you want Zeus Lite to generate…"
-          style="
-            width: 100%;
-            margin-top: 8px;
-            min-height: 140px;
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(233, 238, 246, 0.16);
-            background: rgba(233, 238, 246, 0.06);
-            color: var(--text);
-            font-weight: 600;
-            outline: none;
-            resize: vertical;
-          "
-        ></textarea>
-
-        <button
-          id="generateBtn"
-          type="button"
-          style="margin-top: 12px"
-        >
-          Generate
-        </button>
-
-        <div
-          id="output"
-          class="idea-block"
-          style="margin-top: 14px; white-space: pre-wrap"
-        >
-          Output will appear here…
-        </div>
-      </div>
-
-      <p class="tiny muted" style="margin-top: 14px">
-        Not you? <a href="login.html" class="primary-link">Return to login</a>
-      </p>
+    <div id="loading" class="hidden">
+      <div class="spinner"></div>
+      <p>Finding best product…</p>
     </div>
 
-    <script src="app.js"></script>
-    <script>
-      (async function () {
-        function getEmail() {
-          try {
-            if (window.ZeusAuth && typeof ZeusAuth.getEmail === "function") {
-              return ZeusAuth.getEmail();
-            }
-          } catch (e) {}
-          try {
-            return localStorage.getItem("zeus_email");
-          } catch (e) {}
-          return null;
-        }
+    <div id="result" class="hidden">
+      <h2 id="ideaTitle"></h2>
 
-        function setAccessText(msg) {
-          var el = document.getElementById("accessText");
-          if (el) el.textContent = msg;
-        }
+      <div class="idea-block">
+        <strong>Profit potential:</strong>
+        <div id="profit"></div>
+      </div>
 
-        const email = String(getEmail() || "").trim().toLowerCase();
-        if (!email || !email.includes("@")) {
-          location.href = "login.html";
-          return;
-        }
+      <div class="idea-block">
+        <strong>Why it’s moving:</strong>
+        <div id="why"></div>
+      </div>
+
+      <div class="idea-block">
+        <strong>Best ad angle:</strong>
+        <div id="angle"></div>
+      </div>
+
+      <div class="idea-block">
+        <strong>Purchase likelihood:</strong>
+        <div id="likelihood"></div>
+      </div>
+    </div>
+
+    <div id="limitMessage" class="hidden">
+      <h2>Daily limit reached</h2>
+      <p>You’ve hit your max generation limit for today.<br />Try again tomorrow for more generations.</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      const genBtn = document.getElementById("genBtn");
+      const loading = document.getElementById("loading");
+      const result = document.getElementById("result");
+      const limitMessage = document.getElementById("limitMessage");
+
+      const ideaTitle = document.getElementById("ideaTitle");
+      const profit = document.getElementById("profit");
+      const why = document.getElementById("why");
+      const angle = document.getElementById("angle");
+      const likelihood = document.getElementById("likelihood");
+
+      function show(el){ el.classList.remove("hidden"); }
+      function hide(el){ el.classList.add("hidden"); }
+
+      async function generate() {
+        hide(result);
+        hide(limitMessage);
+        show(loading);
+        genBtn.disabled = true;
 
         try {
-          const res = await fetch("/.netlify/functions/check-access", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-          });
+          // IMPORTANT:
+          // This assumes your existing app.js exposes a function you already use to generate.
+          // If your app.js uses a different function name, tell me what it is and I’ll wire it exactly.
+          const data = await window.ZeusLiteGenerate?.(); // <-- expects an object back
 
-          const data = await res.json();
-
-          if (!data.allowed) {
-            location.href = "login.html";
+          // If your generator returns "limit reached" in a different way, adjust here:
+          if (data?.limitReached) {
+            hide(loading);
+            show(limitMessage);
             return;
           }
 
-          if (data.status === "admin") setAccessText("Admin ✅");
-          else setAccessText("Active ✅");
+          ideaTitle.textContent = data?.title || "Product Idea";
+          profit.textContent = data?.profit || "";
+          why.textContent = data?.why || "";
+          angle.textContent = data?.angle || "";
+          likelihood.textContent = data?.likelihood || "";
+
+          hide(loading);
+          show(result);
         } catch (e) {
           console.error(e);
-          // If we can’t verify access, fail closed.
-          location.href = "login.html";
+          hide(loading);
+          // fallback basic message:
+          limitMessage.querySelector("h2").textContent = "Error";
+          limitMessage.querySelector("p").textContent = "Something went wrong. Try again.";
+          show(limitMessage);
+        } finally {
+          genBtn.disabled = false;
         }
-      })();
+      }
 
-      // Basic placeholder generator behavior (safe to remove if your app.js already wires this up)
-      (function () {
-        var btn = document.getElementById("generateBtn");
-        var prompt = document.getElementById("prompt");
-        var out = document.getElementById("output");
-
-        if (!btn || !prompt || !out) return;
-
-        btn.addEventListener("click", function () {
-          var text = (prompt.value || "").trim();
-          out.textContent = text
-            ? "You entered:\n\n" + text
-            : "Enter a prompt first.";
-        });
-      })();
-    </script>
-  </body>
-</html>
+      genBtn.addEventListener("click", generate);
+    })();
+  </script>
+</body>
