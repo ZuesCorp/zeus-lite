@@ -120,7 +120,7 @@
       var limitMessage = byId("limitMessage");
 
       var ideaTitle = byId("ideaTitle");
-      // Support BOTH naming styles (your lite.html version vs older versions)
+      // Support BOTH naming styles
       var profit = byId("profit") || byId("what");
       var why = byId("why") || byId("who");
       var angle = byId("angle") || byId("money");
@@ -158,7 +158,6 @@
           var genFn = window.ZeusLiteGenerate || defaultGeneratorFallback;
           var data = await genFn();
 
-          // If your generator signals limit in some other way, we support this too:
           if (data && data.limitReached) {
             show(limitMessage);
             return;
