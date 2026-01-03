@@ -19,6 +19,7 @@ function json(statusCode, obj) {
 }
 
 exports.handler = async (event) => {
+  // CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 204,
@@ -47,6 +48,18 @@ exports.handler = async (event) => {
     return json(400, { allowed: false, status: "unknown" });
   }
 
+  // ✅ Admin whitelist via env var
+  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+
+  const isAdmin = ADMIN_EMAILS.includes(email);
+  if (isAdmin) {
+    return json(200, { allowed: true, status: "admin" });
+  }
+
+  // Normal subscriber check (Supabase)
   try {
     const { data, error } = await supabase
       .from("zeus_subscribers")
