@@ -1,53 +1,60 @@
-<body>
-  <div class="container">
-    <h1>Zeus Lite</h1>
-    <p class="subtitle">For solo eCommerce sellers who need products people actually buy.</p>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zeus Lite — Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-    <button id="genBtn" type="button">Generate Product</button>
+  <body>
+    <div class="container">
+      <h1>Zeus Lite</h1>
+      <p class="subtitle">For solo eCommerce sellers who need products people actually buy.</p>
 
-    <div id="loading" class="hidden">
-      <div class="spinner"></div>
-      <p id="loadingText">Finding best product…</p>
+      <button id="genBtn" type="button">Generate Product</button>
+
+      <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <p id="loadingText">Finding best product…</p>
+      </div>
+
+      <div id="result" class="hidden">
+        <h2 id="ideaTitle"></h2>
+
+        <div class="idea-block">
+          <strong>Profit potential:</strong>
+          <div id="profit"></div>
+        </div>
+
+        <div class="idea-block">
+          <strong>Why it’s moving:</strong>
+          <div id="why"></div>
+        </div>
+
+        <div class="idea-block">
+          <strong>Best ad angle:</strong>
+          <div id="angle"></div>
+        </div>
+
+        <div class="idea-block">
+          <strong>Purchase likelihood:</strong>
+          <div id="likelihood"></div>
+        </div>
+      </div>
+
+      <div id="limitMessage" class="hidden">
+        <h2>Daily limit reached</h2>
+        <p>You’ve hit your max generation limit for today.<br />Try again tomorrow for more generations.</p>
+      </div>
     </div>
 
-    <div id="result" class="hidden">
-      <h2 id="ideaTitle"></h2>
-
-      <div class="idea-block">
-        <strong>Profit potential:</strong>
-        <div id="profit"></div>
-      </div>
-
-      <div class="idea-block">
-        <strong>Why it’s moving:</strong>
-        <div id="why"></div>
-      </div>
-
-      <div class="idea-block">
-        <strong>Best ad angle:</strong>
-        <div id="angle"></div>
-      </div>
-
-      <div class="idea-block">
-        <strong>Purchase likelihood:</strong>
-        <div id="likelihood"></div>
-      </div>
-    </div>
-
-    <div id="limitMessage" class="hidden">
-      <h2>Daily limit reached</h2>
-      <p>You’ve hit your max generation limit for today.<br />Try again tomorrow for more generations.</p>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-  <script>
-    (async function () {
-      // Gate access (redirects to login.html if not allowed)
-      await window.ZeusAuth.requireServerAccess("login.html");
-
-      // Wire the button + daily limit
-      window.ZeusLite.initGenerator({ dailyLimit: 10 });
-    })();
-  </script>
-</body>
+    <script src="app.js"></script>
+    <script>
+      (async function () {
+        await window.ZeusAuth.requireServerAccess("login.html");
+        window.ZeusLite.initGenerator({ dailyLimit: 10 });
+      })();
+    </script>
+  </body>
+</html>
