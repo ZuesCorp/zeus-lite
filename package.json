@@ -2,7 +2,11 @@
   "name": "zeus-lite",
   "version": "1.0.0",
   "private": true,
+  "description": "Zeus Lite",
+  "main": "index.js",
+  "license": "MIT",
   "dependencies": {
-    "stripe": "^16.0.0"
+    "@supabase/supabase-js": "^2.45.4",
+    "stripe": "^14.25.0"
   }
 }
