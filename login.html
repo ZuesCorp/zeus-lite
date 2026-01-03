@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Zeus Lite — Login</title>
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- Force button/link colors for this page -->
+    <style>
+      /* Main color */
+      #checkBtn,
+      #continueBtn,
+      #buyBtn {
+        background: #404c7d !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      }
+
+      /* Hover */
+      #checkBtn:hover,
+      #continueBtn:hover,
+      #buyBtn:hover {
+        background: #4a5990 !important;
+        opacity: 1 !important;
+        transform: translateY(-1px);
+      }
+
+      /* Optional: make the Buy link look exactly like a button */
+      #buyBtn {
+        display: inline-block;
+        text-decoration: none;
+        margin-top: 16px;
+      }
+    </style>
   </head>
 
   <body>
@@ -84,10 +112,17 @@
           setStatus("Checking…");
 
           try {
-            var res = await fetch("/.netlify/functions/check-access", {
+            const NETLIFY_SITE = "https://zueslite.netlify.app"; // <-- replace with your real Netlify URL if different
+            const fnUrl =
+              location.hostname.endsWith("netlify.app") ||
+              location.hostname === "localhost"
+                ? "/.netlify/functions/check-access"
+                : `${NETLIFY_SITE}/.netlify/functions/check-access`;
+
+            var res = await fetch(fnUrl, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email: email }),
+              body: JSON.stringify({ email }),
             });
 
             var data = await res.json();
