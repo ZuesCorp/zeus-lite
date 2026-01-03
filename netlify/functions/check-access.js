@@ -50,7 +50,7 @@ exports.handler = async (event) => {
   try {
     const { data, error } = await supabase
       .from("zeus_subscribers")
-      .select("subscription_status")
+      .select("status")
       .eq("email", email)
       .maybeSingle();
 
@@ -59,7 +59,7 @@ exports.handler = async (event) => {
       return json(500, { allowed: false, status: "unknown" });
     }
 
-    const status = data?.subscription_status || "unknown";
+    const status = data?.status || "unknown";
     const allowed = status === "active";
 
     return json(200, { allowed, status });
