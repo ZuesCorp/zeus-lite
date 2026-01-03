@@ -1,130 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zeus Lite — Generator</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+<body>
+  <div class="container">
+    <h1>Zeus Lite</h1>
+    <p class="subtitle">For solo eCommerce sellers who need products people actually buy.</p>
 
-  <body>
-    <div class="container">
-      <h1>Zeus Lite</h1>
-      <p class="subtitle">
-        For solo eCommerce sellers who need products people actually buy.
-      </p>
+    <button id="genBtn" type="button">Generate Product</button>
 
-      <button id="genBtn" type="button">Generate Product</button>
+    <div id="loading" class="hidden">
+      <div class="spinner"></div>
+      <p id="loadingText">Finding best product…</p>
+    </div>
 
-      <div id="loading" class="hidden">
-        <div class="spinner"></div>
-        <p>Finding best product…</p>
+    <div id="result" class="hidden">
+      <h2 id="ideaTitle"></h2>
+
+      <div class="idea-block">
+        <strong>Profit potential:</strong>
+        <div id="profit"></div>
       </div>
 
-      <div id="result" class="hidden">
-        <h2 id="ideaTitle"></h2>
-
-        <div class="idea-block">
-          <strong>Profit potential:</strong>
-          <div id="profit"></div>
-        </div>
-
-        <div class="idea-block">
-          <strong>Why it’s moving:</strong>
-          <div id="why"></div>
-        </div>
-
-        <div class="idea-block">
-          <strong>Best ad angle:</strong>
-          <div id="angle"></div>
-        </div>
-
-        <div class="idea-block">
-          <strong>Purchase likelihood:</strong>
-          <div id="likelihood"></div>
-        </div>
+      <div class="idea-block">
+        <strong>Why it’s moving:</strong>
+        <div id="why"></div>
       </div>
 
-      <div id="limitMessage" class="hidden">
-        <h2>Daily limit reached</h2>
-        <p>
-          You’ve hit your max generation limit for today.<br />
-          Try again tomorrow for more generations.
-        </p>
+      <div class="idea-block">
+        <strong>Best ad angle:</strong>
+        <div id="angle"></div>
+      </div>
+
+      <div class="idea-block">
+        <strong>Purchase likelihood:</strong>
+        <div id="likelihood"></div>
       </div>
     </div>
 
-    <script src="app.js"></script>
+    <div id="limitMessage" class="hidden">
+      <h2>Daily limit reached</h2>
+      <p>You’ve hit your max generation limit for today.<br />Try again tomorrow for more generations.</p>
+    </div>
+  </div>
 
-    <script>
-      (function () {
-        const genBtn = document.getElementById("genBtn");
-        const loading = document.getElementById("loading");
-        const result = document.getElementById("result");
-        const limitMessage = document.getElementById("limitMessage");
+  <script src="app.js"></script>
+  <script>
+    (async function () {
+      // Gate access (redirects to login.html if not allowed)
+      await window.ZeusAuth.requireServerAccess("login.html");
 
-        const ideaTitle = document.getElementById("ideaTitle");
-        const profit = document.getElementById("profit");
-        const why = document.getElementById("why");
-        const angle = document.getElementById("angle");
-        const likelihood = document.getElementById("likelihood");
-
-        function show(el) {
-          el.classList.remove("hidden");
-        }
-        function hide(el) {
-          el.classList.add("hidden");
-        }
-
-        function setError(msg) {
-          hide(loading);
-          hide(result);
-          limitMessage.querySelector("h2").textContent = "Error";
-          limitMessage.querySelector("p").textContent = msg;
-          show(limitMessage);
-        }
-
-        async function generate() {
-          hide(result);
-          hide(limitMessage);
-          show(loading);
-          genBtn.disabled = true;
-
-          try {
-            // expects your app.js to expose: window.ZeusLiteGenerate()
-            if (typeof window.ZeusLiteGenerate !== "function") {
-              throw new Error(
-                "Generator function not found. Make sure app.js defines window.ZeusLiteGenerate()."
-              );
-            }
-
-            const data = await window.ZeusLiteGenerate();
-
-            // If your generator indicates a limit differently, adjust this check:
-            if (data && (data.limitReached === true || data.status === "limit")) {
-              hide(loading);
-              show(limitMessage);
-              return;
-            }
-
-            ideaTitle.textContent = data?.title || "Product Idea";
-            profit.textContent = data?.profit || "";
-            why.textContent = data?.why || "";
-            angle.textContent = data?.angle || "";
-            likelihood.textContent = data?.likelihood || "";
-
-            hide(loading);
-            show(result);
-          } catch (e) {
-            console.error(e);
-            setError("Something went wrong. Try again.");
-          } finally {
-            genBtn.disabled = false;
-          }
-        }
-
-        genBtn.addEventListener("click", generate);
-      })();
-    </script>
-  </body>
-</html>
+      // Wire the button + daily limit
+      window.ZeusLite.initGenerator({ dailyLimit: 10 });
+    })();
+  </script>
+</body>
