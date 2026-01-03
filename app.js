@@ -150,16 +150,37 @@
           return;
         }
 
+        // =========================
+        // LOADING (forced minimum time + text steps)
+        // =========================
         show(loading);
-        setText(loadingText, "Finding best product…");
+
+        // 4–6 second loading screen (fixed at 5s for consistency)
+        var MIN_LOADING_MS = 5000;
+
+        // loading text sequence
+        setText(loadingText, "Searching product…");
+        var stepTimer = setTimeout(function () {
+          setText(loadingText, "Finding buyer likelihood…");
+        }, 2500);
+
         btn.disabled = true;
 
         try {
           var genFn = window.ZeusLiteGenerate || defaultGeneratorFallback;
-          var data = await genFn();
+
+          // Run generator + enforce minimum loading time
+          var genPromise = genFn();
+          var delayPromise = new Promise(function (r) { setTimeout(r, MIN_LOADING_MS); });
+
+          var data = await Promise.all([genPromise, delayPromise]).then(function (res) {
+            return res[0];
+          });
+
+          clearTimeout(stepTimer);
 
           // Support alternate “limit reached” signaling from your generator
-          if (data && data.limitReached) {
+          if (data && (data.limitReached || data.dailyLimitReached)) {
             show(limitMessage);
             return;
           }
@@ -191,6 +212,8 @@
             show(limitMessage);
           }
         } finally {
+          // Make sure timer is cleared even on errors
+          try { clearTimeout(stepTimer); } catch (e) {}
           hide(loading);
           btn.disabled = false;
         }
