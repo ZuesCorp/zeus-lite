@@ -1,63 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zeus Lite — Login</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zeus Lite — Login</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
-  <div class="container">
-    <h1>Zeus Lite</h1>
-    <p class="subtitle">Log in to access the generator.</p>
+  <body>
+    <div class="container">
+      <h1>Zeus Lite</h1>
+      <p class="subtitle">Log in to access the generator.</p>
 
-    <div class="idea-block">
-      <strong>Status:</strong> <span id="statusText">Checking…</span>
+      <div class="idea-block">
+        <strong>Status:</strong> <span id="statusText">Enter your email…</span>
+      </div>
+
+      <div class="idea-block">
+        <strong>Email</strong>
+        <input
+          id="emailInput"
+          type="email"
+          placeholder="you@domain.com"
+          style="
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(233, 238, 246, 0.16);
+            background: rgba(233, 238, 246, 0.06);
+            color: var(--text);
+            font-weight: 600;
+            outline: none;
+          "
+        />
+        <button id="checkBtn" type="button">Check Access</button>
+      </div>
+
+      <button id="continueBtn" type="button" class="hidden">
+        Continue to Generator
+      </button>
+
+      <a
+        id="buyBtn"
+        class="primary-link"
+        href="https://buy.stripe.com/4gM5kDf0LeZyfIz51fbsc00"
+      >
+        Buy Zeus Lite ($9.99/mo)
+      </a>
+
+      <p class="tiny muted" style="margin-top: 12px;">
+        After checkout, come back here and check access with the same email you used at checkout.
+      </p>
     </div>
 
-    <button id="continueBtn" type="button" class="hidden">
-      Continue to Generator
-    </button>
+    <script src="app.js"></script>
+    <script>
+      (function () {
+        var statusText = document.getElementById("statusText");
+        var continueBtn = document.getElementById("continueBtn");
+        var checkBtn = document.getElementById("checkBtn");
+        var emailInput = document.getElementById("emailInput");
 
-    <a
-      id="buyBtn"
-      class="primary-link"
-      href="https://buy.stripe.com/4gM5kDf0LeZyfIz51fbsc00"
-    >
-      Buy Zeus Lite ($9.99/mo)
-    </a>
+        function setStatus(msg) {
+          statusText.textContent = msg;
+        }
 
-    <p style="margin-top:12px; opacity:.8; font-size:.95rem;">
-      After checkout you’ll be sent back here and auto-unlocked.
-    </p>
-  </div>
+        function showContinue(email) {
+          continueBtn.classList.remove("hidden");
+          continueBtn.onclick = function () {
+            ZeusAuth.setEmail(email);
+            location.href = "lite.html";
+          };
+        }
 
-  <script src="app.js"></script>
-  <script>
-    (function () {
-      var statusText = document.getElementById("statusText");
-      var continueBtn = document.getElementById("continueBtn");
-      var buyBtn = document.getElementById("buyBtn");
+        async function checkAccess() {
+          var email = String(emailInput.value || "").trim().toLowerCase();
+          if (!email || !email.includes("@")) {
+            setStatus("Enter a valid email.");
+            return;
+          }
 
-      if (!window.ZeusAuth) {
-        statusText.textContent = "Error loading auth";
-        return;
-      }
+          setStatus("Checking…");
 
-      if (ZeusAuth.handleStripeReturn("lite.html")) {
-        return;
-      }
+          try {
+            var res = await fetch("/.netlify/functions/check-access", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: email }),
+            });
 
-      if (ZeusAuth.isPaid()) {
-        statusText.textContent = "Unlocked ✅";
-        continueBtn.classList.remove("hidden");
-        continueBtn.onclick = function () { location.href = "lite.html"; };
-        if (buyBtn) buyBtn.classList.add("hidden");
-      } else {
-        statusText.textContent = "Locked 🔒 (purchase required)";
-      }
-    })();
-  </script>
-</body>
+            var data = await res.json();
+
+            if (data.allowed) {
+              setStatus("Unlocked ✅");
+              showContinue(email);
+            } else {
+              continueBtn.classList.add("hidden");
+              if (data.status === "past_due") {
+                setStatus("Payment failed / past due 🔒");
+              } else {
+                setStatus("Locked 🔒 (purchase required)");
+              }
+            }
+          } catch (e) {
+            console.error(e);
+            setStatus("Error checking access. Try again.");
+          }
+        }
+
+        checkBtn.onclick = checkAccess;
+
+        emailInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") checkAccess();
+        });
+      })();
+    </script>
+  </body>
 </html>
