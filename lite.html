@@ -8,71 +8,119 @@
   </head>
 
   <body>
-    <script src="app.js"></script>
-    <script>
-      (function () {
-        ZeusAuth.requireServerAccess("login.html");
-      })();
-    </script>
-
     <div class="container">
-      <div class="row" style="justify-content: space-between;">
-        <div>
-          <h1 style="margin-bottom: 4px;">Zeus Lite</h1>
-          <p class="subtitle">Clear product ideas. No guesswork.</p>
-        </div>
-        <button class="ghost" id="logoutBtn" type="button">Log out</button>
+      <h1>Zeus Lite</h1>
+      <p class="subtitle">Generator</p>
+
+      <div class="idea-block" id="accessBanner">
+        <strong>Access:</strong> <span id="accessText">Checking…</span>
       </div>
 
-      <button id="generateBtn" type="button">Generate</button>
+      <!-- Your generator UI goes here -->
+      <div class="idea-block" style="text-align: left">
+        <strong>Prompt</strong>
+        <textarea
+          id="prompt"
+          placeholder="Describe what you want Zeus Lite to generate…"
+          style="
+            width: 100%;
+            margin-top: 8px;
+            min-height: 140px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(233, 238, 246, 0.16);
+            background: rgba(233, 238, 246, 0.06);
+            color: var(--text);
+            font-weight: 600;
+            outline: none;
+            resize: vertical;
+          "
+        ></textarea>
 
-      <div id="loading" class="hidden">
-        <div class="spinner"></div>
-        <p class="muted" id="loadingText">Thinking…</p>
+        <button
+          id="generateBtn"
+          type="button"
+          style="margin-top: 12px"
+        >
+          Generate
+        </button>
+
+        <div
+          id="output"
+          class="idea-block"
+          style="margin-top: 14px; white-space: pre-wrap"
+        >
+          Output will appear here…
+        </div>
       </div>
 
-      <div id="result" class="hidden">
-        <h2 id="ideaTitle"></h2>
-
-        <div class="idea-block">
-          <strong>Profit potential</strong>
-          <div id="what"></div>
-        </div>
-
-        <div class="idea-block">
-          <strong>Why it’s moving</strong>
-          <div id="who"></div>
-        </div>
-
-        <div class="idea-block">
-          <strong>Best ad angle</strong>
-          <div id="money"></div>
-        </div>
-
-        <div class="idea-block">
-          <strong>Purchase likelihood</strong>
-          <div id="why"></div>
-        </div>
-
-        <p class="tiny muted" id="countText" style="margin-top: 12px;"></p>
-      </div>
-
-      <div id="limitMessage" class="hidden">
-        <h2>Daily limit reached</h2>
-        <p class="muted">Come back tomorrow for more ideas.</p>
-      </div>
+      <p class="tiny muted" style="margin-top: 14px">
+        Not you? <a href="login.html" class="primary-link">Return to login</a>
+      </p>
     </div>
 
+    <script src="app.js"></script>
     <script>
-      (function () {
-        var logoutBtn = document.getElementById("logoutBtn");
-        logoutBtn.onclick = function () {
-          ZeusAuth.clearEmail();
-          location.replace("login.html");
-        };
+      (async function () {
+        function getEmail() {
+          try {
+            if (window.ZeusAuth && typeof ZeusAuth.getEmail === "function") {
+              return ZeusAuth.getEmail();
+            }
+          } catch (e) {}
+          try {
+            return localStorage.getItem("zeus_email");
+          } catch (e) {}
+          return null;
+        }
 
-        ZeusLite.initGenerator({
-          dailyLimit: 10
+        function setAccessText(msg) {
+          var el = document.getElementById("accessText");
+          if (el) el.textContent = msg;
+        }
+
+        const email = String(getEmail() || "").trim().toLowerCase();
+        if (!email || !email.includes("@")) {
+          location.href = "login.html";
+          return;
+        }
+
+        try {
+          const res = await fetch("/.netlify/functions/check-access", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+
+          const data = await res.json();
+
+          if (!data.allowed) {
+            location.href = "login.html";
+            return;
+          }
+
+          if (data.status === "admin") setAccessText("Admin ✅");
+          else setAccessText("Active ✅");
+        } catch (e) {
+          console.error(e);
+          // If we can’t verify access, fail closed.
+          location.href = "login.html";
+        }
+      })();
+
+      // Basic placeholder generator behavior (safe to remove if your app.js already wires this up)
+      (function () {
+        var btn = document.getElementById("generateBtn");
+        var prompt = document.getElementById("prompt");
+        var out = document.getElementById("output");
+
+        if (!btn || !prompt || !out) return;
+
+        btn.addEventListener("click", function () {
+          var text = (prompt.value || "").trim();
+          out.textContent = text
+            ? "You entered:\n\n" + text
+            : "Enter a prompt first.";
         });
       })();
     </script>
