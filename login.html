@@ -26,7 +26,7 @@
         transform: translateY(-1px);
       }
 
-      /* Make the Buy link look like a button */
+      /* Optional: make the Buy link look exactly like a button */
       #buyBtn {
         display: inline-block;
         text-decoration: none;
@@ -78,7 +78,8 @@
       </a>
 
       <p class="tiny muted" style="margin-top: 12px">
-        After checkout, come back here and check access with the same email you used at checkout.
+        After checkout, come back here and check access with the same email you
+        used at checkout.
       </p>
     </div>
 
@@ -94,10 +95,21 @@
           statusText.textContent = msg;
         }
 
+        function setEmail(email) {
+          try {
+            if (window.ZeusAuth && typeof ZeusAuth.setEmail === "function") {
+              ZeusAuth.setEmail(email);
+            }
+          } catch (e) {}
+          try {
+            localStorage.setItem("zeus_email", email);
+          } catch (e) {}
+        }
+
         function showContinue(email) {
           continueBtn.classList.remove("hidden");
           continueBtn.onclick = function () {
-            ZeusAuth.setEmail(email);
+            setEmail(email);
             location.href = "lite.html";
           };
         }
@@ -112,26 +124,20 @@
           setStatus("Checking…");
 
           try {
-            // IMPORTANT:
-            // - On Netlify/localhost => use relative function path
-            // - On GitHub Pages (or anywhere else) => call your Netlify site explicitly
-            const NETLIFY_SITE = "https://zueslite.netlify.app"; // <-- keep this as your real Netlify site
-            const fnUrl =
-              location.hostname.endsWith("netlify.app") ||
-              location.hostname === "localhost"
-                ? "/.netlify/functions/check-access"
-                : `${NETLIFY_SITE}/.netlify/functions/check-access`;
-
-            var res = await fetch(fnUrl, {
+            var res = await fetch("/.netlify/functions/check-access", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email }),
+              body: JSON.stringify({ email: email }),
             });
 
             var data = await res.json();
 
             if (data.allowed) {
-              setStatus("Unlocked ✅");
+              if (data.status === "admin") {
+                setStatus("Admin ✅");
+              } else {
+                setStatus("Unlocked ✅");
+              }
               showContinue(email);
             } else {
               continueBtn.classList.add("hidden");
