@@ -3,7 +3,7 @@
   // Storage helpers
   // =========================
   var EMAIL_KEY = "__zl_email_v1";
-  var LIMIT_KEY = "__zl_daily_v1"; // stores { date: "YYYY-MM-DD", count: number }
+  var LIMIT_KEY = "__zl_daily_v2"; // stores { date: "YYYY-MM-DD", count: number }
 
   function todayKey() {
     var d = new Date();
