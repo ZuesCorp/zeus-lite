@@ -1,15 +1,3 @@
-// netlify/functions/stripe-webhook.js
-//
-// Stripe -> Netlify Function -> Supabase
-// This is the ONLY place that should ever mark someone "active" or "inactive".
-// Frontend never decides.
-//
-// Env vars required:
-// - STRIPE_SECRET_KEY
-// - STRIPE_WEBHOOK_SECRET
-// - SUPABASE_URL
-// - SUPABASE_SERVICE_ROLE_KEY
-
 const Stripe = require("stripe");
 const { createClient } = require("@supabase/supabase-js");
 
