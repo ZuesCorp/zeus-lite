@@ -3,6 +3,7 @@
   // Storage helpers
   // =========================
   var EMAIL_KEY = "__zl_email_v1";
+  // Bump this version to reset stuck/old limits safely
   var LIMIT_KEY = "__zl_daily_v2"; // stores { date: "YYYY-MM-DD", count: number }
 
   function todayKey() {
@@ -28,6 +29,7 @@
   function readDaily() {
     var raw = safeGet(LIMIT_KEY);
     if (!raw) return { date: todayKey(), count: 0 };
+
     try {
       var obj = JSON.parse(raw);
       if (!obj || obj.date !== todayKey()) return { date: todayKey(), count: 0 };
@@ -92,16 +94,15 @@
   // =========================
   function show(el) { if (el) el.classList.remove("hidden"); }
   function hide(el) { if (el) el.classList.add("hidden"); }
-
   function setText(el, txt) { if (el) el.textContent = txt || ""; }
 
   async function defaultGeneratorFallback() {
-    // Fallback so the UI doesn't break if you haven't wired the real generator yet.
-    // Replace by defining: window.ZeusLiteGenerate = async () => ({ title, profit, why, angle, likelihood })
+    // Replace by defining:
+    // window.ZeusLiteGenerate = async () => ({ title, profit, why, angle, likelihood })
     return {
       title: "Example Product Idea",
       profit: "High margin accessory; simple sourcing; bundles well.",
-      why: "It’s trending due to seasonal demand + social proof content.",
+      why: "It’s moving due to seasonal demand + social proof content.",
       angle: "Before/after demo + problem/solution hook in first 2 seconds.",
       likelihood: "Medium-High (impulse buy under ~$30 performs best).",
     };
@@ -112,7 +113,7 @@
       opts = opts || {};
       var dailyLimit = Number(opts.dailyLimit || 10);
 
-      // Match IDs in lite.html
+      // Match IDs in lite.html (supports older versions too)
       var btn = byId("generateBtn") || byId("genBtn");
       var loading = byId("loading");
       var loadingText = byId("loadingText");
@@ -120,12 +121,12 @@
       var limitMessage = byId("limitMessage");
 
       var ideaTitle = byId("ideaTitle");
-      // Support BOTH naming styles
       var profit = byId("profit") || byId("what");
       var why = byId("why") || byId("who");
       var angle = byId("angle") || byId("money");
       var likelihood = byId("likelihood") || byId("why2");
-      var countText = byId("countText");
+
+      var countText = byId("countText"); // optional if you add it later
 
       if (!btn) {
         console.warn("[ZeusLite] No generate button found (expected #generateBtn or #genBtn).");
@@ -133,10 +134,9 @@
       }
 
       function renderCount() {
+        if (!countText) return;
         var daily = readDaily();
-        if (countText) {
-          countText.textContent = daily.count + " / " + dailyLimit;
-        }
+        countText.textContent = daily.count + " / " + dailyLimit;
       }
 
       async function run() {
@@ -158,6 +158,7 @@
           var genFn = window.ZeusLiteGenerate || defaultGeneratorFallback;
           var data = await genFn();
 
+          // Support alternate “limit reached” signaling from your generator
           if (data && data.limitReached) {
             show(limitMessage);
             return;
@@ -167,9 +168,14 @@
           setText(profit, data && (data.profit || data.what) ? (data.profit || data.what) : "");
           setText(why, data && (data.why || data.who) ? (data.why || data.who) : "");
           setText(angle, data && (data.angle || data.money) ? (data.angle || data.money) : "");
-          setText(likelihood, data && (data.likelihood || data.purchaseLikelihood) ? (data.likelihood || data.purchaseLikelihood) : "");
+          setText(
+            likelihood,
+            data && (data.likelihood || data.purchaseLikelihood)
+              ? (data.likelihood || data.purchaseLikelihood)
+              : ""
+          );
 
-          // Increment daily usage only after a successful generation
+          // Increment daily usage only after success
           daily = readDaily();
           writeDaily(daily.count + 1);
           renderCount();
