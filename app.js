@@ -1,263 +1,217 @@
 (function () {
-  var PAID_UNTIL_KEY = "__zl_u9xT2mPq";
-  var PAID_SIG_KEY = "__zl_s4Vn8cR1";
-  var STRIPE_PARAM = "paid";
-  var SIG_SALT = "zL:2026:k9P7vQ2bA1";
+  var EMAIL_KEY = "__zl_email_v1";
+  var LIMIT_KEY = "__zl_daily_v1";
 
-  function nowMs() { return Date.now(); }
-
-  function hash(str) {
-    var h = 5381, i = str.length;
-    while (i) h = (h * 33) ^ str.charCodeAt(--i);
-    return (h >>> 0).toString(36);
-  }
-
-  function makeSig(untilMs) {
-    return hash(SIG_SALT + "|" + String(untilMs));
+  function todayKey() {
+    var d = new Date();
+    var yyyy = d.getFullYear();
+    var mm = String(d.getMonth() + 1).padStart(2, "0");
+    var dd = String(d.getDate()).padStart(2, "0");
+    return yyyy + "-" + mm + "-" + dd;
   }
 
   function safeGet(key) {
     try { return localStorage.getItem(key); } catch (e) { return null; }
   }
-  function safeSet(key, value) {
-    try { localStorage.setItem(key, value); } catch (e) {}
+
+  function safeSet(key, val) {
+    try { localStorage.setItem(key, val); } catch (e) {}
   }
-  function safeDel(key) {
+
+  function safeRemove(key) {
     try { localStorage.removeItem(key); } catch (e) {}
   }
 
-  function getPaidUntil() {
-    var raw = safeGet(PAID_UNTIL_KEY);
-    var n = parseInt(raw || "0", 10);
-    return isNaN(n) ? 0 : n;
-  }
-
-  function isPaid() {
-    var until = getPaidUntil();
-    if (!until) return false;
-    if (nowMs() > until) return false;
-
-    var sig = safeGet(PAID_SIG_KEY) || "";
-    return sig === makeSig(until);
-  }
-
-  function setPaidDays(days) {
-    var d = typeof days === "number" && days > 0 ? days : 30;
-    var until = nowMs() + d * 24 * 60 * 60 * 1000;
-    safeSet(PAID_UNTIL_KEY, String(until));
-    safeSet(PAID_SIG_KEY, makeSig(until));
-  }
-
-  function clearPaid() {
-    safeDel(PAID_UNTIL_KEY);
-    safeDel(PAID_SIG_KEY);
-  }
-
-  function qs(name) {
-    try { return new URLSearchParams(location.search).get(name); }
-    catch (e) { return null; }
-  }
-
-  function requirePaid(redirectTo) {
-    if (!isPaid()) {
-      location.replace(redirectTo);
-      return false;
-    }
-    return true;
-  }
-
-  function handleStripeReturn(goToUrl) {
-    if (qs(STRIPE_PARAM) === "1") {
-      setPaidDays(30);
-      location.replace(goToUrl);
-      return true;
-    }
-    return false;
+  function byId(id) {
+    return document.getElementById(id);
   }
 
   window.ZeusAuth = {
-    isPaid: isPaid,
-    setPaidDays: setPaidDays,
-    clearPaid: clearPaid,
-    requirePaid: requirePaid,
-    handleStripeReturn: handleStripeReturn
-  };
-
-  function el(id) { return document.getElementById(id); }
-
-  function onReady(fn) {
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
-    else fn();
-  }
-
-  onReady(function () {
-    var generateBtn = el("generateBtn");
-    if (!generateBtn) return;
-
-    var loading = el("loading");
-    var result = el("result");
-    var limitMessage = el("limitMessage");
-
-    var ideaTitle = el("ideaTitle");
-    var profit = el("what");
-    var moving = el("who");
-    var adAngle = el("money");
-    var likelihood = el("why");
-
-    if (!loading || !result || !limitMessage || !ideaTitle || !profit || !moving || !adAngle || !likelihood) {
-      return;
-    }
-
-    var loadingText = loading.getElementsByTagName("p")[0];
-
-    var loadingMessages = [
-      "Finding best product...",
-      "Checking buyer likelihood...",
-      "Scanning demand signals...",
-      "Estimating value per buyer...",
-      "Checking competition density...",
-      "Verifying purchase intent...",
-      "Finalizing pick..."
-    ];
-
-    var LIMIT_PER_DAY = 25;
-    var COUNT_KEY = "zeusLiteDailyCount";
-    var DATE_KEY = "zeusLiteDailyDate";
-
-    function pad2(n) { n = String(n); return n.length === 1 ? "0" + n : n; }
-    function todayKey() {
-      var d = new Date();
-      return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
-    }
-
-    function safeGet2(key) {
-      try { return localStorage.getItem(key); } catch (e) { return null; }
-    }
-    function safeSet2(key, value) {
-      try { localStorage.setItem(key, value); } catch (e) {}
-    }
-
-    function getDailyCount() {
-      var today = todayKey();
-      if (safeGet2(DATE_KEY) !== today) {
-        safeSet2(DATE_KEY, today);
-        safeSet2(COUNT_KEY, "0");
-        return 0;
-      }
-      var n = parseInt(safeGet2(COUNT_KEY) || "0", 10);
-      return isNaN(n) ? 0 : n;
-    }
-
-    function incrementDailyCount() {
-      var c = getDailyCount() + 1;
-      safeSet2(COUNT_KEY, String(c));
-      return c;
-    }
-
-    function startLoadingMessages() {
-      if (!loadingText) return null;
-      var i = 0;
-      loadingText.textContent = loadingMessages[i];
-      return setInterval(function () {
-        i = (i + 1) % loadingMessages.length;
-        loadingText.textContent = loadingMessages[i];
-      }, 900);
-    }
-
-    function show(node) { node.className = node.className.replace(/\bhidden\b/g, "").trim(); }
-    function hide(node) { if (node.className.indexOf("hidden") === -1) node.className += " hidden"; }
-
-    function showLimitOnly() {
-      hide(loading);
-      hide(result);
-      show(limitMessage);
-      generateBtn.disabled = true;
-    }
-
-    var products = [
-      {
-        product: "CarPlay / Android Auto wireless adapter (USB-C)",
-        profitPotential: "Premium perceived value supports higher pricing. Easy upsells (fast-charging cable, magnetic mount) and bundles (2-pack for multiple cars).",
-        whyMoving: "Huge audience with older vehicles that have wired CarPlay. Life-upgrade content performs well because the benefit is instantly understandable.",
-        bestAdAngle: "Turn wired CarPlay into wireless in 10 seconds with a plug-in demo and a clean before/after experience.",
-        likelihood: "86% if you prove compatibility and speed, and remove the 'will this work with my car?' objection."
-      },
-      {
-        product: "Portable mini label printer (Bluetooth)",
-        profitPotential: "Low cost, high perceived utility. Bundles (label rolls, cases) and refill sales add repeat revenue.",
-        whyMoving: "Organization and small-business packing content drives impulse buys. The result is visual and instantly satisfying.",
-        bestAdAngle: "Print clean labels from your phone in seconds. Show messy-before and tidy-after transformations.",
-        likelihood: "82% when you show print quality, app simplicity, and real-world use cases."
-      },
-      {
-        product: "Heated electric lunch box (car + wall plug)",
-        profitPotential: "Premium convenience product with strong gift appeal. Upsells include containers, utensils, and travel bags.",
-        whyMoving: "Workers want hot food without fast food prices. It solves a daily pain with a clear payoff.",
-        bestAdAngle: "Hot lunch anywhere in 20 minutes. Show cold food turning hot while commuting.",
-        likelihood: "78% if you show heat time, leak-proof design, and power compatibility."
-      },
-      {
-        product: "Under-sink leak alarm (battery)",
-        profitPotential: "High perceived value because it prevents expensive damage. Great bundle with batteries or 2-pack offers.",
-        whyMoving: "Homeowners fear water damage. Simple demo content performs well because the benefit is instant.",
-        bestAdAngle: "Place it under the sink and get alerted the second a leak starts. Quick water-on demo.",
-        likelihood: "80% if you prove it is loud, reliable, and easy to install."
-      },
-      {
-        product: "Silicone sink strainer (universal)",
-        profitPotential: "Cheap to source, easy to bundle, strong margin at scale. Multi-pack offers increase AOV.",
-        whyMoving: "Clogs are common and annoying. The fix is simple and instantly understandable.",
-        bestAdAngle: "Stop clogs before they start. Show what it catches in one day and the clean drain after.",
-        likelihood: "90% if the demo is clear and the fit looks universal."
-      }
-    ];
-
-    function pickRandom() {
-      return products[Math.floor(Math.random() * products.length)];
-    }
-
-    if (getDailyCount() >= LIMIT_PER_DAY) {
-      showLimitOnly();
-    }
-
-    function handleClick() {
-      if (getDailyCount() >= LIMIT_PER_DAY) {
-        showLimitOnly();
+    getEmail: function () {
+      return (safeGet(EMAIL_KEY) || "").trim().toLowerCase();
+    },
+    setEmail: function (email) {
+      safeSet(EMAIL_KEY, String(email || "").trim().toLowerCase());
+    },
+    clearEmail: function () {
+      safeRemove(EMAIL_KEY);
+    },
+    requireServerAccess: async function (redirectTo) {
+      var email = window.ZeusAuth.getEmail();
+      if (!email || !email.includes("@")) {
+        location.replace(redirectTo || "login.html");
         return;
       }
 
-      hide(limitMessage);
-      hide(result);
-      show(loading);
-      generateBtn.disabled = true;
+      try {
+        var res = await fetch("/.netlify/functions/check-access", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email }),
+        });
 
-      var intervalId = startLoadingMessages();
-      var loadTime = 4000 + Math.floor(Math.random() * 2001);
+        var data = await res.json();
 
-      setTimeout(function () {
-        if (intervalId) clearInterval(intervalId);
-
-        var p = pickRandom();
-        incrementDailyCount();
-
-        if (getDailyCount() >= LIMIT_PER_DAY) {
-          showLimitOnly();
-          return;
+        if (!data.allowed) {
+          window.ZeusAuth.clearEmail();
+          location.replace(redirectTo || "login.html");
         }
-
-        ideaTitle.textContent = "Product: " + p.product;
-        profit.textContent = p.profitPotential;
-        moving.textContent = p.whyMoving;
-        adAngle.textContent = p.bestAdAngle;
-        likelihood.textContent = p.likelihood;
-
-        hide(loading);
-        show(result);
-        generateBtn.disabled = false;
-      }, loadTime);
+      } catch (e) {
+        window.ZeusAuth.clearEmail();
+        location.replace(redirectTo || "login.html");
+      }
     }
+  };
 
-    if (generateBtn.addEventListener) generateBtn.addEventListener("click", handleClick);
-    else generateBtn.onclick = handleClick;
-  });
+  function getDailyState() {
+    var raw = safeGet(LIMIT_KEY);
+    var t = todayKey();
+    if (!raw) return { day: t, count: 0 };
+
+    try {
+      var parsed = JSON.parse(raw);
+      if (!parsed || parsed.day !== t) return { day: t, count: 0 };
+      return { day: t, count: Number(parsed.count || 0) };
+    } catch (e) {
+      return { day: t, count: 0 };
+    }
+  }
+
+  function setDailyState(state) {
+    safeSet(LIMIT_KEY, JSON.stringify(state));
+  }
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function generateIdea() {
+    var titles = [
+      "One-tap Warranty Tracker",
+      "Smart Pantry Refill Reminders",
+      "Tiny Habit Builder for Busy People",
+      "Local Deal Finder for Parents",
+      "Freelancer Scope-Creep Guard",
+      "AI-Powered Listing Photo Fixer",
+      "Subscription Audit + Cancel Helper",
+      "Gym Routine Generator for Beginners",
+      "Study Sprint Timer with Rewards",
+      "Simple Client Portal for Solo Pros"
+    ];
+
+    var profit = [
+      "High-margin digital subscription with low support load.",
+      "B2B pricing power: charge per seat or per workspace.",
+      "Upsell paths: templates, add-ons, and done-for-you setup."
+    ];
+
+    var moving = [
+      "People are overwhelmed by options and want “just tell me what to do.”",
+      "Costs are up, so tools that save money feel urgent.",
+      "Solo operators need lightweight tools, not full platforms."
+    ];
+
+    var angle = [
+      "Before/after: show time saved in a 10-second demo.",
+      "Target a niche pain: “Stop losing money to ___.”",
+      "Social proof style: “I built this to fix my own problem.”"
+    ];
+
+    var likelihood = [
+      "Strong if you nail a specific niche landing page and a fast demo.",
+      "Medium-high with a clear ROI and a 7-day free trial (optional).",
+      "High when bundled with templates and a simple onboarding checklist."
+    ];
+
+    return {
+      title: pick(titles),
+      what: pick(profit),
+      who: pick(moving),
+      money: pick(angle),
+      why: pick(likelihood)
+    };
+  }
+
+  window.ZeusLite = {
+    initGenerator: function (opts) {
+      opts = opts || {};
+      var dailyLimit = Number(opts.dailyLimit || 10);
+
+      var generateBtn = byId("generateBtn");
+      var loading = byId("loading");
+      var loadingText = byId("loadingText");
+      var result = byId("result");
+      var limitMessage = byId("limitMessage");
+
+      var ideaTitle = byId("ideaTitle");
+      var what = byId("what");
+      var who = byId("who");
+      var money = byId("money");
+      var why = byId("why");
+      var countText = byId("countText");
+
+      if (!generateBtn) return;
+
+      function show(el) { if (el) el.classList.remove("hidden"); }
+      function hide(el) { if (el) el.classList.add("hidden"); }
+
+      function renderCount(state) {
+        if (!countText) return;
+        countText.textContent = "Today: " + state.count + " / " + dailyLimit + " ideas generated.";
+      }
+
+      function setBusy(isBusy, msg) {
+        if (isBusy) {
+          hide(result);
+          hide(limitMessage);
+          show(loading);
+          if (loadingText) loadingText.textContent = msg || "Thinking…";
+          generateBtn.disabled = true;
+        } else {
+          hide(loading);
+          generateBtn.disabled = false;
+        }
+      }
+
+      function checkLimit() {
+        var state = getDailyState();
+        if (state.count >= dailyLimit) {
+          hide(loading);
+          hide(result);
+          show(limitMessage);
+          renderCount(state);
+          return false;
+        }
+        renderCount(state);
+        return true;
+      }
+
+      checkLimit();
+
+      generateBtn.addEventListener("click", function () {
+        if (!checkLimit()) return;
+
+        var state = getDailyState();
+        setBusy(true, "Generating a strong idea…");
+
+        setTimeout(function () {
+          var idea = generateIdea();
+
+          ideaTitle.textContent = idea.title;
+          what.textContent = idea.what;
+          who.textContent = idea.who;
+          money.textContent = idea.money;
+          why.textContent = idea.why;
+
+          state.count += 1;
+          setDailyState(state);
+
+          setBusy(false);
+          hide(limitMessage);
+          show(result);
+          renderCount(state);
+        }, 650);
+      });
+    }
+  };
 })();
