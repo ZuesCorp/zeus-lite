@@ -15,16 +15,26 @@
   }
 
   function safeGet(key) {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
   }
   function safeSet(key, val) {
-    try { localStorage.setItem(key, val); } catch (e) {}
+    try {
+      localStorage.setItem(key, val);
+    } catch (e) {}
   }
   function safeRemove(key) {
-    try { localStorage.removeItem(key); } catch (e) {}
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {}
   }
 
-  function byId(id) { return document.getElementById(id); }
+  function byId(id) {
+    return document.getElementById(id);
+  }
 
   function readDaily() {
     var raw = safeGet(LIMIT_KEY);
@@ -75,7 +85,9 @@
         });
 
         var data = {};
-        try { data = await res.json(); } catch (e) {}
+        try {
+          data = await res.json();
+        } catch (e) {}
 
         if (!data.allowed) {
           window.ZeusAuth.clearEmail();
@@ -92,9 +104,15 @@
   // =========================
   // Generator UI wiring
   // =========================
-  function show(el) { if (el) el.classList.remove("hidden"); }
-  function hide(el) { if (el) el.classList.add("hidden"); }
-  function setText(el, txt) { if (el) el.textContent = txt || ""; }
+  function show(el) {
+    if (el) el.classList.remove("hidden");
+  }
+  function hide(el) {
+    if (el) el.classList.add("hidden");
+  }
+  function setText(el, txt) {
+    if (el) el.textContent = txt || "";
+  }
 
   async function defaultGeneratorFallback() {
     // Replace by defining:
@@ -171,7 +189,9 @@
 
           // Run generator + enforce minimum loading time
           var genPromise = genFn();
-          var delayPromise = new Promise(function (r) { setTimeout(r, MIN_LOADING_MS); });
+          var delayPromise = new Promise(function (r) {
+            setTimeout(r, MIN_LOADING_MS);
+          });
 
           var data = await Promise.all([genPromise, delayPromise]).then(function (res) {
             return res[0];
@@ -186,13 +206,13 @@
           }
 
           setText(ideaTitle, data && data.title ? data.title : "Product Idea");
-          setText(profit, data && (data.profit || data.what) ? (data.profit || data.what) : "");
-          setText(why, data && (data.why || data.who) ? (data.why || data.who) : "");
-          setText(angle, data && (data.angle || data.money) ? (data.angle || data.money) : "");
+          setText(profit, data && (data.profit || data.what) ? data.profit || data.what : "");
+          setText(why, data && (data.why || data.who) ? data.why || data.who : "");
+          setText(angle, data && (data.angle || data.money) ? data.angle || data.money : "");
           setText(
             likelihood,
             data && (data.likelihood || data.purchaseLikelihood)
-              ? (data.likelihood || data.purchaseLikelihood)
+              ? data.likelihood || data.purchaseLikelihood
               : ""
           );
 
@@ -213,7 +233,9 @@
           }
         } finally {
           // Make sure timer is cleared even on errors
-          try { clearTimeout(stepTimer); } catch (e) {}
+          try {
+            clearTimeout(stepTimer);
+          } catch (e) {}
           hide(loading);
           btn.disabled = false;
         }
