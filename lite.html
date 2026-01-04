@@ -14,54 +14,32 @@
 
       <button id="genBtn">Generate Product</button>
 
-      <!-- Loading -->
       <div id="loading" class="hidden">
         <div class="spinner"></div>
         <p id="loadingText">Finding winning product…</p>
       </div>
 
-      <!-- Result -->
       <div id="result" class="hidden">
         <h2 id="ideaTitle"></h2>
 
-        <div class="idea-block">
-          <strong>Profit potential:</strong>
-          <span id="profit"></span>
-        </div>
-
-        <div class="idea-block">
-          <strong>Why it’s moving:</strong>
-          <span id="why"></span>
-        </div>
-
-        <div class="idea-block">
-          <strong>Best ad angle:</strong>
-          <span id="angle"></span>
-        </div>
-
-        <div class="idea-block">
-          <strong>Purchase likelihood:</strong>
-          <span id="likelihood"></span>
-        </div>
+        <div class="idea-block"><strong>Profit potential:</strong> <span id="profit"></span></div>
+        <div class="idea-block"><strong>Why it’s moving:</strong> <span id="why"></span></div>
+        <div class="idea-block"><strong>Best ad angle:</strong> <span id="angle"></span></div>
+        <div class="idea-block"><strong>Purchase likelihood:</strong> <span id="likelihood"></span></div>
       </div>
 
-      <!-- Limit message -->
       <div id="limitMessage" class="hidden">
         <h2>Daily limit reached</h2>
         <p>You’ve hit your max generation limit for today.<br />Try again tomorrow for more generations.</p>
       </div>
     </div>
 
-    <!-- IMPORTANT: app.js must be its own file. Do NOT paste it into this HTML. -->
     <script src="app.js"></script>
     <script>
       (async function () {
-        // Gate page behind server access (Netlify function)
         if (window.ZeusAuth && ZeusAuth.requireServerAccess) {
           await ZeusAuth.requireServerAccess("login.html");
         }
-
-        // Init generator
         if (window.ZeusLite && ZeusLite.initGenerator) {
           ZeusLite.initGenerator({ dailyLimit: 10 });
         }
