@@ -1,205 +1,71 @@
-START app.js
-(function () {
-  // =========================
-  // Storage helpers
-  // =========================
-  var EMAIL_KEY = "__zl_email_v1";
-  var LIMIT_KEY = "__zl_daily_v2"; // { date, count }
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zeus Lite — Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-  function todayKey() {
-    var d = new Date();
-    return (
-      d.getFullYear() +
-      "-" +
-      String(d.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(d.getDate()).padStart(2, "0")
-    );
-  }
+  <body>
+    <div class="container">
+      <h1>Zeus Lite</h1>
+      <p class="subtitle">For solo eCommerce sellers who need products people actually buy.</p>
 
-  function safeGet(k) {
-    try {
-      return localStorage.getItem(k);
-    } catch {
-      return null;
-    }
-  }
-  function safeSet(k, v) {
-    try {
-      localStorage.setItem(k, v);
-    } catch {}
-  }
-  function safeRemove(k) {
-    try {
-      localStorage.removeItem(k);
-    } catch {}
-  }
-  function byId(id) {
-    return document.getElementById(id);
-  }
+      <button id="genBtn">Generate Product</button>
 
-  function readDaily() {
-    var raw = safeGet(LIMIT_KEY);
-    if (!raw) return { date: todayKey(), count: 0 };
-    try {
-      var obj = JSON.parse(raw);
-      if (obj.date !== todayKey()) return { date: todayKey(), count: 0 };
-      return { date: obj.date, count: Number(obj.count || 0) };
-    } catch {
-      return { date: todayKey(), count: 0 };
-    }
-  }
+      <!-- Loading -->
+      <div id="loading" class="hidden">
+        <div class="spinner"></div>
+        <p id="loadingText">Finding winning product…</p>
+      </div>
 
-  function writeDaily(count) {
-    safeSet(LIMIT_KEY, JSON.stringify({ date: todayKey(), count }));
-  }
+      <!-- Result -->
+      <div id="result" class="hidden">
+        <h2 id="ideaTitle"></h2>
 
-  // =========================
-  // AUTH
-  // =========================
-  window.ZeusAuth = {
-    getEmail() {
-      return (safeGet(EMAIL_KEY) || "").toLowerCase().trim();
-    },
-    setEmail(email) {
-      safeSet(EMAIL_KEY, email.toLowerCase().trim());
-    },
-    clearEmail() {
-      safeRemove(EMAIL_KEY);
-    },
-    async requireServerAccess(redirectTo) {
-      var email = this.getEmail();
-      if (!email.includes("@")) {
-        location.replace(redirectTo || "login.html");
-        return;
-      }
-      try {
-        var res = await fetch("/.netlify/functions/check-access", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
-        var data = await res.json();
-        if (!data.allowed) {
-          this.clearEmail();
-          location.replace(redirectTo || "login.html");
-        }
-      } catch {
-        this.clearEmail();
-        location.replace(redirectTo || "login.html");
-      }
-    },
-  };
+        <div class="idea-block">
+          <strong>Profit potential:</strong>
+          <span id="profit"></span>
+        </div>
 
-  // =========================
-  // REAL PRODUCT DATA
-  // =========================
-  var PRODUCTS = [
-    {
-      title: "Portable Ice Bath Tub (Athletes & Recovery)",
-      profit:
-        "Manufacturing cost ~$35, selling price $99–149. High AOV and repeat accessories.",
-      why:
-        "Cold therapy is exploding on TikTok and YouTube among gym, runners, and biohackers.",
-      angle: "Show extreme reactions + recovery transformation in 7 days.",
-      likelihood: "High – emotional pain relief + trend-driven impulse buy.",
-    },
-    {
-      title: "Pet Hair Remover Roller (Reusable)",
-      profit:
-        "Costs ~$3–5 landed, sells for $19.99. Insane margins and low returns.",
-      why: "Pet owners constantly complain about fur on clothes and couches.",
-      angle: "Instant visual demo: one swipe → clean couch.",
-      likelihood: "Very High – universal problem with immediate payoff.",
-    },
-    {
-      title: "Car Gap Filler Organizer (Seat Gap)",
-      profit: "Costs ~$6, sells for $29.99. Bundle-friendly.",
-      why: "Everyone drops phones and food between car seats.",
-      angle: "POV frustration clip → clean solution snap-in.",
-      likelihood: "High – simple fix to an annoying daily problem.",
-    },
-  ];
+        <div class="idea-block">
+          <strong>Why it’s moving:</strong>
+          <span id="why"></span>
+        </div>
 
-  function pickRandomProduct() {
-    return PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
-  }
+        <div class="idea-block">
+          <strong>Best ad angle:</strong>
+          <span id="angle"></span>
+        </div>
 
-  // =========================
-  // UI HELPERS
-  // =========================
-  function show(el) {
-    el && el.classList.remove("hidden");
-  }
-  function hide(el) {
-    el && el.classList.add("hidden");
-  }
-  function setText(el, txt) {
-    if (el) el.textContent = txt || "";
-  }
+        <div class="idea-block">
+          <strong>Purchase likelihood:</strong>
+          <span id="likelihood"></span>
+        </div>
+      </div>
 
-  // =========================
-  // MAIN GENERATOR
-  // =========================
-  window.ZeusLite = {
-    initGenerator(opts) {
-      opts = opts || {};
-      var dailyLimit = Number(opts.dailyLimit || 10);
+      <!-- Limit message -->
+      <div id="limitMessage" class="hidden">
+        <h2>Daily limit reached</h2>
+        <p>You’ve hit your max generation limit for today.<br />Try again tomorrow for more generations.</p>
+      </div>
+    </div>
 
-      var btn = byId("genBtn") || byId("generateBtn");
-      var loading = byId("loading");
-      var loadingText = byId("loadingText");
-      var result = byId("result");
-      var limitMessage = byId("limitMessage");
-
-      var ideaTitle = byId("ideaTitle");
-      var profit = byId("profit");
-      var why = byId("why");
-      var angle = byId("angle");
-      var likelihood = byId("likelihood");
-
-      if (!btn) return;
-
-      async function run() {
-        hide(result);
-        hide(limitMessage);
-
-        var daily = readDaily();
-        if (daily.count >= dailyLimit) {
-          show(limitMessage);
-          return;
+    <!-- IMPORTANT: app.js must be its own file. Do NOT paste it into this HTML. -->
+    <script src="app.js"></script>
+    <script>
+      (async function () {
+        // Gate page behind server access (Netlify function)
+        if (window.ZeusAuth && ZeusAuth.requireServerAccess) {
+          await ZeusAuth.requireServerAccess("login.html");
         }
 
-        show(loading);
-        setText(loadingText, "Finding winning product…");
-        btn.disabled = true;
-
-        setTimeout(() => {
-          setText(loadingText, "Analyzing buyer psychology…");
-        }, 2500);
-
-        try {
-          await new Promise((r) => setTimeout(r, 5000));
-
-          var data = pickRandomProduct();
-
-          setText(ideaTitle, data.title);
-          setText(profit, data.profit);
-          setText(why, data.why);
-          setText(angle, data.angle);
-          setText(likelihood, data.likelihood);
-
-          writeDaily(daily.count + 1);
-          show(result);
-        } catch (e) {
-          console.error(e);
-        } finally {
-          hide(loading);
-          btn.disabled = false;
+        // Init generator
+        if (window.ZeusLite && ZeusLite.initGenerator) {
+          ZeusLite.initGenerator({ dailyLimit: 10 });
         }
-      }
-
-      btn.addEventListener("click", run);
-    },
-  };
-})();
+      })();
+    </script>
+  </body>
+</html>
