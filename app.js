@@ -86,182 +86,217 @@
   // REAL PRODUCT DATA
   // =========================
   var PRODUCTS = [
-  {
-    title: "Magnetic Screen Door (Pet + Kids Friendly)",
-    profit: "Costs ~$8–12 landed, sells for $29.99–49.99. Low return rate.",
-    why: "People want fresh air without bugs; renters love no-drill installs.",
-    angle: "Before/after bug swarm + effortless hands-free walk-through demo.",
-    likelihood: "High – instant visible benefit."
-  },
-  {
-    title: "Under-Cabinet Motion Sensor Light Bars",
-    profit: "Costs ~$9–15, sells for $29.99–59.99. Bundle 2–4 packs.",
-    why: "Night kitchen trips + closets + stairs = constant pain point.",
-    angle: "POV night clip → lights auto-on → ‘why didn’t I buy sooner?’",
-    likelihood: "High – solves daily annoyance."
-  },
-  {
-    title: "Self-Adhesive Sliding Cabinet Locks (Babyproof)",
-    profit: "Costs ~$2–4, sells for $14.99–24.99. Great multi-pack margins.",
-    why: "New parents panic-buy safety fixes fast.",
-    angle: "Chaos toddler clip → quick install → calm parent payoff.",
-    likelihood: "Very High – emotional safety trigger."
-  },
-  {
-    title: "Silicone Stove Gap Covers (Crumb Blockers)",
-    profit: "Costs ~$2–4, sells for $14.99–19.99. Cheap ship + low returns.",
-    why: "Everyone hates gunk falling between stove and counter.",
-    angle: "Gross cleaning clip → cover install → spotless wipe reveal.",
-    likelihood: "Very High – satisfying transformation."
-  },
-  {
-    title: "Leak-Proof Travel Toiletry Bottles (TSA Set)",
-    profit: "Costs ~$3–6, sells for $19.99–29.99. Strong giftability.",
-    why: "Travelers hate shampoo explosions in luggage.",
-    angle: "Stress test squeeze + upside-down leak test.",
-    likelihood: "High – prevents expensive mess."
-  },
-  {
-    title: "Reusable Lint + Pet Hair Laundry Catcher",
-    profit: "Costs ~$2–4, sells for $14.99–24.99. Impulse buy.",
-    why: "Pet owners constantly fight hair on clothes.",
-    angle: "Washer reveal: ‘look what it caught’ close-up.",
-    likelihood: "Very High – visual proof sells."
-  },
-  {
-    title: "Electric Handheld Milk Frother (Coffee At Home)",
-    profit: "Costs ~$2–5, sells for $14.99–24.99. Add-ons: syrups/cups.",
-    why: "People want café drinks without paying $7 daily.",
-    angle: "Home latte art glow-up in 10 seconds.",
-    likelihood: "High – daily use + small price."
-  },
-  {
-    title: "Car Seat Back Organizer (Kids + Travel)",
-    profit: "Costs ~$6–10, sells for $24.99–39.99. Great bundles for 2 cars.",
-    why: "Parents want less chaos and more storage in the car.",
-    angle: "Messy car → organized transformation timelapse.",
-    likelihood: "High – parent pain point."
-  },
-  {
-    title: "Foldable Laptop Stand (Ergonomic + Cooling)",
-    profit: "Costs ~$8–15, sells for $29.99–59.99. WFH evergreen.",
-    why: "Neck/back pain from laptop hunching is huge.",
-    angle: "Posture comparison + ‘pain relief’ narrative.",
-    likelihood: "High – work/health crossover."
-  },
-  {
-    title: "Mini Heat Sealer for Snack Bags",
-    profit: "Costs ~$3–7, sells for $14.99–24.99. Viral demo potential.",
-    why: "People hate stale chips and messy clips.",
-    angle: "Crunch test: sealed vs unsealed after 3 days.",
-    likelihood: "High – satisfying utility."
-  },
-  {
-    title: "Shower Squeegee + Holder (Mold Prevention)",
-    profit: "Costs ~$3–6, sells for $14.99–24.99. Low return risk.",
-    why: "Hard water spots + mold cleanup is annoying.",
-    angle: "One swipe reveal on glass door.",
-    likelihood: "High – obvious visual payoff."
-  },
-  {
-    title: "Portable Blender Bottle (Smoothies On-The-Go)",
-    profit: "Costs ~$12–20, sells for $39.99–69.99. Strong AOV.",
-    why: "Fitness/health crowd wants quick smoothies anywhere.",
-    angle: "‘Gym bag smoothie’ demo + ice-crush test.",
-    likelihood: "High – lifestyle-driven."
-  },
-  {
-    title: "Adjustable Dumbbell Connector Bar (Home Gym Hack)",
-    profit: "Costs ~$6–10, sells for $24.99–39.99. Niche but high intent.",
-    why: "People want barbell-style lifts with dumbbells.",
-    angle: "Home gym transformation + heavier lifts in seconds.",
-    likelihood: "Medium-High – gym crowd converts."
-  },
-  {
-    title: "Magnetic Phone Mount (Car Vent or Dash)",
-    profit: "Costs ~$2–5, sells for $14.99–24.99. High volume item.",
-    why: "Drivers want easy GPS view, hate flimsy mounts.",
-    angle: "Shake test + one-hand snap-on demo.",
-    likelihood: "High – universal use case."
-  },
-  {
-    title: "Anti-Snore Nose Clips / Breathing Strips",
-    profit: "Costs ~$2–6, sells for $14.99–29.99. Subscription angles.",
-    why: "Snoring ruins sleep + relationships.",
-    angle: "Couple POV: ‘we finally slept’ narrative.",
-    likelihood: "Medium-High – depends on trust."
-  },
-  {
-    title: "Reusable Sticky Gel Cleaner (Car + Keyboard Dust)",
-    profit: "Costs ~$1–3, sells for $9.99–16.99. Easy upsell.",
-    why: "Dust in vents/keys is gross and hard to clean.",
-    angle: "Satisfying press-and-lift grime reveal.",
-    likelihood: "High – cheap impulse buy."
-  },
-  {
-    title: "LED Closet Rod Light (Motion + Rechargeable)",
-    profit: "Costs ~$8–14, sells for $29.99–49.99.",
-    why: "Closets are dark; people want ‘luxury’ feel cheap.",
-    angle: "Dark closet → luxury lighting transformation.",
-    likelihood: "High – aesthetic utility."
-  },
-  {
-    title: "Silicone Makeup Brush Cleaning Bowl",
-    profit: "Costs ~$1–3, sells for $9.99–19.99. Beauty evergreen.",
-    why: "Dirty brushes cause breakouts; cleaning feels tedious.",
-    angle: "Gross foam reveal + ‘acne fix’ framing.",
-    likelihood: "High – beauty pain point."
-  },
-  {
-    title: "Rechargeable Pocket Hand Warmer",
-    profit: "Costs ~$8–15, sells for $24.99–49.99. Seasonal spikes.",
-    why: "Cold hands commuting/outdoors = constant complaint.",
-    angle: "Temperature test + cozy POV outdoors.",
-    likelihood: "High in season – Medium off-season."
-  },
-  {
-    title: "Cable Management Box + Clips Set",
-    profit: "Costs ~$6–10, sells for $19.99–39.99. Bundle-friendly.",
-    why: "People hate messy cords (WFH + living rooms).",
-    angle: "Desk glow-up before/after.",
-    likelihood: "High – aesthetic + organization."
-  },
-  {
-    title: "Collapsible Water Bowl (Dog Walk Essential)",
-    profit: "Costs ~$1–3, sells for $9.99–16.99. Great add-on item.",
-    why: "Pet owners need water on hikes/walks.",
-    angle: "Cute dog drinking + ‘never forget water’ hook.",
-    likelihood: "High – pet market buys fast."
-  },
-  {
-    title: "Furniture Moving Sliders (Hardwood Saver)",
-    profit: "Costs ~$2–5, sells for $14.99–24.99. Low returns.",
-    why: "Moving furniture scratches floors and hurts backs.",
-    angle: "One-person move demo + scratch prevention proof.",
-    likelihood: "High – practical + visual."
-  },
-  {
-    title: "Kitchen Sink Caddy Organizer (Sponge + Brush)",
-    profit: "Costs ~$4–8, sells for $19.99–29.99.",
-    why: "People want cleaner counters and less slime.",
-    angle: "Gross sponge puddle → clean sink setup reveal.",
-    likelihood: "High – home organization trend."
-  },
-  {
-    title: "Door Draft Stopper (Energy Saver)",
-    profit: "Costs ~$3–7, sells for $14.99–29.99. Seasonal boost.",
-    why: "Cold drafts = higher bills + discomfort.",
-    angle: "Candle smoke test showing draft → stopper fix.",
-    likelihood: "High in season."
-  },
-  {
-    title: "Reusable Silicone Food Storage Bags (Zip + Freezer)",
-    profit: "Costs ~$6–12, sells for $24.99–39.99. Eco angle.",
-    why: "People want to reduce waste but still want convenience.",
-    angle: "Leak test + meal prep aesthetic.",
-    likelihood: "High – kitchen evergreen."
-  }
-];
+ {
+  title: "Adjustable Laptop Stand (Foldable Aluminum)",
+  profit: "Costs ~$6–10 landed, sells for $19.99–29.99. Strong WFH demand.",
+  why: "People work long hours on laptops and suffer neck/back pain.",
+  angle: "Posture before/after comparison + desk setup glow-up.",
+  likelihood: "High – work + health crossover."
+},
+{
+  title: "Rechargeable Motion Sensor Closet Light",
+  profit: "Costs ~$7–12 landed, sells for $19.99–29.99. Low returns.",
+  why: "Dark closets and cabinets frustrate people daily.",
+  angle: "Dark space → motion-triggered light reveal.",
+  likelihood: "High – instant visual payoff."
+},
+{
+  title: "Car Gap Filler Pads (Seat Crack Blockers)",
+  profit: "Costs ~$3–6 landed, sells for $14.99–24.99. Easy shipping.",
+  why: "Phones, keys, and food constantly fall into seat gaps.",
+  angle: "Dropped phone panic → gap filler saves the day.",
+  likelihood: "Very High – universal car pain point."
+},
+{
+  title: "Electric Makeup Brush Cleaner Spinner",
+  profit: "Costs ~$8–14 landed, sells for $24.99–29.99.",
+  why: "Manual brush cleaning is slow and messy.",
+  angle: "Dirty brush → 10-second spin → clean reveal.",
+  likelihood: "High – beauty + satisfying demo."
+},
+{
+  title: "Pet Hair Remover Roller (Reusable)",
+  profit: "Costs ~$6–9 landed, sells for $19.99–29.99.",
+  why: "Pet hair ruins furniture and clothes.",
+  angle: "Hair-covered couch → clean in seconds.",
+  likelihood: "Very High – pet owners buy fast."
+},
+{
+  title: "Magnetic Phone Holder for Car Dashboard",
+  profit: "Costs ~$4–7 landed, sells for $14.99–24.99.",
+  why: "Drivers want safe, one-hand phone mounting.",
+  angle: "Shake test + instant snap-on demo.",
+  likelihood: "High – everyday use product."
+},
+{
+  title: "Heated USB Desk Hand Warmer Pad",
+  profit: "Costs ~$7–12 landed, sells for $19.99–29.99.",
+  why: "Cold hands while working hurt productivity.",
+  angle: "Thermal camera heat test + cozy desk POV.",
+  likelihood: "High – seasonal but strong."
+},
+{
+  title: "Over-the-Sink Dish Drying Rack (Roll-Up)",
+  profit: "Costs ~$8–12 landed, sells for $19.99–29.99.",
+  why: "Small kitchens lack counter space.",
+  angle: "Messy sink → clean, space-saving setup.",
+  likelihood: "High – kitchen organization trend."
+},
+{
+  title: "Cordless Electric Screwdriver Set",
+  profit: "Costs ~$10–15 landed, sells for $24.99–29.99.",
+  why: "People hate manual screwing for small tasks.",
+  angle: "Furniture assembly sped up 5x.",
+  likelihood: "High – DIY convenience."
+},
+{
+  title: "Reusable Silicone Baking Mat (Non-Stick)",
+  profit: "Costs ~$4–7 landed, sells for $14.99–24.99.",
+  why: "People want to stop wasting parchment paper.",
+  angle: "No-oil baking + easy peel-off demo.",
+  likelihood: "High – eco + kitchen combo."
+},
+{
+  title: "Smart Posture Corrector Strap",
+  profit: "Costs ~$7–12 landed, sells for $19.99–29.99.",
+  why: "Poor posture causes pain and fatigue.",
+  angle: "Slouch alert → posture correction POV.",
+  likelihood: "Medium-High – health-conscious buyers."
+},
+{
+  title: "Bathroom Sink Hair Catcher (Stainless Steel)",
+  profit: "Costs ~$3–5 landed, sells for $12.99–19.99.",
+  why: "Clogged drains are expensive and annoying.",
+  angle: "Pulled-out hair clog shock reveal.",
+  likelihood: "Very High – universal problem."
+},
+{
+  title: "Portable LED Ring Light Tripod (Phone Mount)",
+  profit: "Costs ~$8–13 landed, sells for $19.99–29.99.",
+  why: "Creators want better lighting instantly.",
+  angle: "No light vs ring light comparison.",
+  likelihood: "High – creator economy."
+},
+{
+  title: "Shower Head with Filter (Hard Water Fix)",
+  profit: "Costs ~$9–14 landed, sells for $24.99–29.99.",
+  why: "Hard water damages skin and hair.",
+  angle: "Filtered vs unfiltered water test.",
+  likelihood: "High – health + beauty."
+},
+{
+  title: "Magnetic Spice Rack for Refrigerator",
+  profit: "Costs ~$6–10 landed, sells for $14.99–24.99.",
+  why: "People lack cabinet space.",
+  angle: "Empty fridge side → organized spices.",
+  likelihood: "High – kitchen organization."
+},
+{
+  title: "Noise-Reducing Door Draft Stopper",
+  profit: "Costs ~$5–8 landed, sells for $14.99–24.99.",
+  why: "Noise and cold drafts disturb sleep.",
+  angle: "Sound test before vs after install.",
+  likelihood: "High – apartment renters."
+},
+{
+  title: "Electric Lint Remover for Clothes",
+  profit: "Costs ~$6–10 landed, sells for $14.99–24.99.",
+  why: "Fuzz makes clothes look old.",
+  angle: "Old sweater → brand new look.",
+  likelihood: "Very High – visual transformation."
+},
+{
+  title: "Desk Cable Organizer Box (Heat Resistant)",
+  profit: "Costs ~$6–9 landed, sells for $14.99–24.99.",
+  why: "Messy cords stress people out.",
+  angle: "Cable chaos → clean desk reveal.",
+  likelihood: "High – WFH setups."
+},
+{
+  title: "Compact Foot Rest Under Desk",
+  profit: "Costs ~$7–11 landed, sells for $19.99–29.99.",
+  why: "Poor leg support causes fatigue.",
+  angle: "Workday comfort POV.",
+  likelihood: "Medium-High – office workers."
+},
+{
+  title: "Shower Shelf Organizer (No-Drill)",
+  profit: "Costs ~$8–12 landed, sells for $19.99–29.99.",
+  why: "Shower clutter falls constantly.",
+  angle: "Slippery bottles → secure storage test.",
+  likelihood: "High – renters love it."
+},
+{
+  title: "Anti-Theft Backpack Lock (TSA Approved)",
+  profit: "Costs ~$4–7 landed, sells for $14.99–24.99.",
+  why: "Travelers fear pickpockets.",
+  angle: "Hidden zipper lock demo.",
+  likelihood: "High – travel niche."
+},
+{
+  title: "Heated Eyelash Curler (Rechargeable)",
+  profit: "Costs ~$6–10 landed, sells for $19.99–29.99.",
+  why: "Traditional curlers damage lashes.",
+  angle: "One-eye test comparison.",
+  likelihood: "High – beauty market."
+},
+{
+  title: "Wall-Mounted Mop & Broom Holder",
+  profit: "Costs ~$5–8 landed, sells for $14.99–24.99.",
+  why: "Cleaning tools clutter closets.",
+  angle: "Messy floor → wall organization.",
+  likelihood: "High – home organization."
+},
+{
+  title: "Mini Desktop Vacuum Cleaner",
+  profit: "Costs ~$6–9 landed, sells for $14.99–24.99.",
+  why: "Keyboard crumbs are annoying.",
+  angle: "Crumb cleanup close-up.",
+  likelihood: "High – satisfying demo."
+},
+{
+  title: "Insulated Stainless Steel Water Bottle (24oz)",
+  profit: "Costs ~$8–12 landed, sells for $19.99–29.99.",
+  why: "People want cold drinks all day.",
+  angle: "Ice test after 12 hours.",
+  likelihood: "High – evergreen product."
+},
+{
+  title: "Car Interior Cleaning Gel Kit",
+  profit: "Costs ~$4–7 landed, sells for $14.99–24.99.",
+  why: "Car vents collect dirt fast.",
+  angle: "Vent grime pull-out reveal.",
+  likelihood: "Very High – gross sells."
+},
+{
+  title: "Weighted Eye Mask for Sleep",
+  profit: "Costs ~$6–10 landed, sells for $19.99–29.99.",
+  why: "Light disrupts sleep quality.",
+  angle: "Relaxation + sleep POV.",
+  likelihood: "High – wellness trend."
+},
+{
+  title: "Pet Water Fountain (USB Rechargeable)",
+  profit: "Costs ~$12–18 landed, sells for $24.99–29.99.",
+  why: "Pets drink more from flowing water.",
+  angle: "Pet choosing fountain over bowl.",
+  likelihood: "High – pet owners spend."
+},
+{
+  title: "Silicone Sink Splash Guard",
+  profit: "Costs ~$4–6 landed, sells for $14.99–19.99.",
+  why: "Water splashes soak counters.",
+  angle: "Messy sink → dry counter reveal.",
+  likelihood: "High – simple fix."
+},
+{
+  title: "Foldable Travel Shoe Organizer Bag",
+  profit: "Costs ~$5–8 landed, sells for $14.99–24.99.",
+  why: "Shoes dirty luggage while traveling.",
+  angle: "Dirty shoes vs clean packing setup.",
+  likelihood: "High – travel pain point."
+}
+
 
   function pickRandomProduct() {
     return PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
