@@ -1,4 +1,3 @@
-START app.js
 (function () {
   // =========================
   // Storage helpers
@@ -18,21 +17,13 @@ START app.js
   }
 
   function safeGet(k) {
-    try {
-      return localStorage.getItem(k);
-    } catch {
-      return null;
-    }
+    try { return localStorage.getItem(k); } catch { return null; }
   }
   function safeSet(k, v) {
-    try {
-      localStorage.setItem(k, v);
-    } catch {}
+    try { localStorage.setItem(k, v); } catch {}
   }
   function safeRemove(k) {
-    try {
-      localStorage.removeItem(k);
-    } catch {}
+    try { localStorage.removeItem(k); } catch {}
   }
   function byId(id) {
     return document.getElementById(id);
@@ -77,7 +68,7 @@ START app.js
         var res = await fetch("/.netlify/functions/check-access", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email })
         });
         var data = await res.json();
         if (!data.allowed) {
@@ -88,7 +79,7 @@ START app.js
         this.clearEmail();
         location.replace(redirectTo || "login.html");
       }
-    },
+    }
   };
 
   // =========================
@@ -97,28 +88,25 @@ START app.js
   var PRODUCTS = [
     {
       title: "Portable Ice Bath Tub (Athletes & Recovery)",
-      profit:
-        "Manufacturing cost ~$35, selling price $99–149. High AOV and repeat accessories.",
-      why:
-        "Cold therapy is exploding on TikTok and YouTube among gym, runners, and biohackers.",
+      profit: "Manufacturing cost ~$35, selling price $99–149. High AOV and repeat accessories.",
+      why: "Cold therapy is exploding on TikTok and YouTube among gym, runners, and biohackers.",
       angle: "Show extreme reactions + recovery transformation in 7 days.",
-      likelihood: "High – emotional pain relief + trend-driven impulse buy.",
+      likelihood: "High – emotional pain relief + trend-driven impulse buy."
     },
     {
       title: "Pet Hair Remover Roller (Reusable)",
-      profit:
-        "Costs ~$3–5 landed, sells for $19.99. Insane margins and low returns.",
+      profit: "Costs ~$3–5 landed, sells for $19.99. Insane margins and low returns.",
       why: "Pet owners constantly complain about fur on clothes and couches.",
       angle: "Instant visual demo: one swipe → clean couch.",
-      likelihood: "Very High – universal problem with immediate payoff.",
+      likelihood: "Very High – universal problem with immediate payoff."
     },
     {
       title: "Car Gap Filler Organizer (Seat Gap)",
       profit: "Costs ~$6, sells for $29.99. Bundle-friendly.",
       why: "Everyone drops phones and food between car seats.",
       angle: "POV frustration clip → clean solution snap-in.",
-      likelihood: "High – simple fix to an annoying daily problem.",
-    },
+      likelihood: "High – simple fix to an annoying daily problem."
+    }
   ];
 
   function pickRandomProduct() {
@@ -128,15 +116,9 @@ START app.js
   // =========================
   // UI HELPERS
   // =========================
-  function show(el) {
-    el && el.classList.remove("hidden");
-  }
-  function hide(el) {
-    el && el.classList.add("hidden");
-  }
-  function setText(el, txt) {
-    if (el) el.textContent = txt || "";
-  }
+  function show(el) { el && el.classList.remove("hidden"); }
+  function hide(el) { el && el.classList.add("hidden"); }
+  function setText(el, txt) { if (el) el.textContent = txt || ""; }
 
   // =========================
   // MAIN GENERATOR
@@ -179,7 +161,7 @@ START app.js
         }, 2500);
 
         try {
-          await new Promise((r) => setTimeout(r, 5000));
+          await new Promise(r => setTimeout(r, 5000));
 
           var data = pickRandomProduct();
 
@@ -200,6 +182,6 @@ START app.js
       }
 
       btn.addEventListener("click", run);
-    },
+    }
   };
 })();
