@@ -50,40 +50,43 @@
   }
 
   function writeDaily(count) {
-    safeSet(LIMIT_KEY, JSON.stringify({ date: todayKey(), count }));
+    safeSet(LIMIT_KEY, JSON.stringify({ date: todayKey(), count: count }));
   }
 
   // =========================
   // AUTH
   // =========================
   window.ZeusAuth = {
-    getEmail() {
+    getEmail: function () {
       return (safeGet(EMAIL_KEY) || "").toLowerCase().trim();
     },
-    setEmail(email) {
-      safeSet(EMAIL_KEY, email.toLowerCase().trim());
+    setEmail: function (email) {
+      safeSet(EMAIL_KEY, String(email || "").toLowerCase().trim());
     },
-    clearEmail() {
+    clearEmail: function () {
       safeRemove(EMAIL_KEY);
     },
-    async requireServerAccess(redirectTo) {
+    requireServerAccess: async function (redirectTo) {
       var email = this.getEmail();
       if (!email.includes("@")) {
         location.replace(redirectTo || "login.html");
         return;
       }
+
       try {
         var res = await fetch("/.netlify/functions/check-access", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email: email }),
         });
+
         var data = await res.json();
-        if (!data.allowed) {
+
+        if (!data || !data.allowed) {
           this.clearEmail();
           location.replace(redirectTo || "login.html");
         }
-      } catch {
+      } catch (e) {
         this.clearEmail();
         location.replace(redirectTo || "login.html");
       }
@@ -105,8 +108,7 @@
     },
     {
       title: "Pet Hair Remover Roller (Reusable)",
-      profit:
-        "Costs ~$3–5 landed, sells for $19.99. Insane margins and low returns.",
+      profit: "Costs ~$3–5 landed, sells for $19.99. Insane margins and low returns.",
       why: "Pet owners constantly complain about fur on clothes and couches.",
       angle: "Instant visual demo: one swipe → clean couch.",
       likelihood: "Very High – universal problem with immediate payoff.",
@@ -118,8 +120,6 @@
       angle: "POV frustration clip → clean solution snap-in.",
       likelihood: "High – simple fix to an annoying daily problem.",
     },
-
-    // --- Added products ---
     {
       title: "Heated USB Desk Hand Warmer Pad",
       profit: "Costs ~$7–12 landed, sells for $19.99–29.99.",
@@ -234,7 +234,7 @@
   // MAIN GENERATOR
   // =========================
   window.ZeusLite = {
-    initGenerator(opts) {
+    initGenerator: function (opts) {
       opts = opts || {};
       var dailyLimit = Number(opts.dailyLimit || 10);
 
@@ -266,12 +266,14 @@
         setText(loadingText, "Finding winning product…");
         btn.disabled = true;
 
-        setTimeout(() => {
+        setTimeout(function () {
           setText(loadingText, "Analyzing buyer psychology…");
         }, 2500);
 
         try {
-          await new Promise((r) => setTimeout(r, 5000));
+          await new Promise(function (r) {
+            setTimeout(r, 5000);
+          });
 
           var data = pickRandomProduct();
 
